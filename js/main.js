@@ -33,16 +33,11 @@ var choiceArray = $([
 var nextButton = $("#next");
 
 
-var gameOver = setInterval(function(){startTime()},1000);
-function startTime()
-{
-  if(playerCharacter.alive === false) {
-    clearInterval(gameOver);
-    alert("You've died. Sorry!")
+var gameOver = function () {
     choiceBox.append("<button id='reset'>Reset</button>")
-    
     var resetButton = $("#reset");
     $(".choiceButton").remove();
+    console.log("game over is running");
 
     resetButton[0].addEventListener("click", function () {
     	playerCharacter.health = 10;
@@ -60,11 +55,8 @@ function startTime()
     	choiceText3.append(choiceButton3[0]);
     	choiceItems.fadeIn();
     	resetButton.remove();
-    })
-  } else {
-
-  }  
-};
+	})
+}
 
 
 
@@ -100,8 +92,10 @@ choiceArray[1][0].addEventListener("click", function() {
 	choiceText3.text("");
 	createNewButton(4);
 	createNewButton(5);
-	choiceArray[0][0].replaceWith(choiceArray[3][0]);
-	choiceArray[1][0].replaceWith(choiceArray[4][0]);
+	choiceArray[0][0].remove();
+	choiceArray[1][0].remove();
+	choiceText1.append(choiceArray[3][0]);
+	choiceText2.append(choiceArray[4][0]);
 	choiceText.fadeIn();
 	choiceArray[3].fadeIn();
 	choiceArray[4].fadeIn();
@@ -119,7 +113,6 @@ choiceArray[2][0].addEventListener("click", function() {
 	createNewButton(8);
 	choiceArray[0][0].remove();
 	choiceText1.append(choiceArray[3][0])
-	choiceArray[0][0].replaceWith(choiceArray[3][0]);
 	choiceArray[1][0].remove();
 	choiceText2.append(choiceArray[4][0])
 	choiceText.fadeIn();
@@ -139,8 +132,10 @@ var addEventListeners = function () {
 			choiceText2.text("This seems like a good time to have a baseball bat")
 			createNewButton(6);
 			createNewButton(7);
-			choiceArray[3][0].replaceWith(choiceArray[5][0]);
-			choiceArray[4][0].replaceWith(choiceArray[6][0]);
+			choiceArray[3][0].remove();
+			choiceArray[4][0].remove();
+			choiceText1.append(choiceArray[5][0])
+			choiceText2.append(choiceArray[6][0])
 			choiceText.fadeIn();
 			choiceArray[5].fadeIn();
 			choiceArray[6].fadeIn();
@@ -165,8 +160,10 @@ var addEventListeners = function () {
 			choiceText2.text("Spooky woods? No thanks. You're headed to civilization")
 			createNewButton(9);
 			createNewButton(10);
-			choiceArray[3][0].replaceWith(choiceArray[5][0]);
-			choiceArray[4][0].replaceWith(choiceArray[6][0]);
+			choiceArray[3][0].remove();
+			choiceArray[4][0].remove();
+			choiceText1.append(choiceArray[5][0])
+			choiceText2.append(choiceArray[6][0])
 			choiceText.fadeIn();
 			choiceArray[5].fadeIn();
 			choiceArray[6].fadeIn();
@@ -179,11 +176,13 @@ var addEventListeners = function () {
 			updateNarrative("You run through the trees with reckless abandon, the branches whipping your arms and face as you plow ahead. You can't stop, you can hear them moving behind you, cursing and panting as their thick robes catch on roots and branches. You as you move deeper into the woods you hear a deep rumbling. In a second the forest seems to turn against you - the roots take on a life of their own shifting and darting to harass you and make you fall. You trip and the forest roots coil around your ankles, arms, and neck. You fight as hard as you can but there is no denying the implacable strenght of the possessed roots. The air is choked from your body and you die. Sad!")
 			playerCharacter.alive = false;
 			choiceItems.fadeOut();
+			gameOver();
 			//add a reset button to appear
 		})
 		choiceArray[6][0].addEventListener("click", function() {
 			updateNarrative("You leap the fence at the edge of your property towards town. You can hear the cultists behind you, but their heavy robes and their tendency to read latin instead of exercising leaves you with a distinct edge. After a frantic mile of running, you've lost them. You make it into town, scared but alive. What were they doing at your house? What kind of dark horror are they going to visit on the world? What the hell happened to your door? You'll never know and spend the rest of yuor life trying to forget that this happened.");
 			choiceItems.fadeOut();
+			gameOver();
 			//add a reset button to appear
 		})
 	}
@@ -199,9 +198,11 @@ var addEventListeners = function () {
 			choiceItems.fadeOut();
 			choiceText1.text("Alright, time for some batting practice. Head back into the kitchen and show those intruders what's up")
 			choiceText2.text("Cool. You've got a bat. You're still not wild about fighting three spooky dudes at once. You're getting out of here.")
-			createNewButton(8)
-			choiceArray[5][0].replaceWith(choiceArray[3][0]);
-			choiceArray[6][0].replaceWith(choiceArray[7][0]);
+			createNewButton(8);
+			choiceArray[5][0].remove();
+			choiceArray[6][0].remove();
+			choiceText1.append(choiceArray[3][0]);
+			choiceText2.append(choiceArray[7][0]);
 			choiceText.fadeIn();
 			playerCharacter.choice = 5;
 			addEventListeners();
@@ -217,8 +218,10 @@ var addEventListeners = function () {
 			choiceText2.text("Spooky woods? No thanks. You're headed to civilization")
 			createNewButton(9);
 			createNewButton(10);
-			choiceArray[3][0].replaceWith(choiceArray[8][0]);
-			choiceArray[7][0].replaceWith(choiceArray[9][0]);
+			choiceArray[3][0].remove();
+			choiceArray[7][0].remove();
+			choiceText1.append(choiceArray[8][0]);
+			choiceText2.append(choiceArray[9][0]);
 			choiceText.fadeIn();
 			choiceArray[8].fadeIn();
 			choiceArray[9].fadeIn();
@@ -231,13 +234,16 @@ var addEventListeners = function () {
 		choiceArray[8][0].addEventListener("click", function () {
 			updateNarrative("You run through the trees with reckless abandon, the branches whipping your arms and face as you plow ahead. You can't stop, you can hear them moving behind you, cursing and panting as their thick robes catch on roots and branches. As you move deeper into the woods you hear a deep rumbling. In a second the forest seems to turn against you - the roots take on a life of their own shifting and darting to harass you and make you fall. You trip and the forest roots coil around your ankles, arms, and neck. You fight as hard as you can but there is no denying the implacable strenght of the possessed roots. The air is choked from your body and you die. Sad!")
 			playerCharacter.alive = false;
+			gameOver();
 			choiceItems.fadeOut();
-			//add a reset button to appear
+
+
 		})
 		choiceArray[9][0].addEventListener("click", function() {
 			updateNarrative("You leap the fence at the edge of your property towards town. You can hear the cultists behind you, but their heavy robes and their tendency to read latin instead of exercising leaves you with a distinct edge. After a frantic mile of running, you've lost them. You make it into town, scared but alive. What were they doing at your house? What kind of dark horror are they going to visit on the world? What the hell happened to your door? You'll never know and spend the rest of yuor life trying to forget that this happened.");
+			gameOver();
 			choiceItems.fadeOut();
-			//add a reset button to appear
+
 		})
 	}
 }
