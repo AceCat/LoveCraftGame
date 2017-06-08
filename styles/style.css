@@ -1,0 +1,32 @@
+.container {
+	background-color: black;
+	height: 700px;
+}
+
+#narrativeBox {
+	background-color: black;
+	height: 50%;
+	width: 100%;
+	border: 1px solid white;
+	position: relative;
+	display: block;
+}
+
+#choiceBox {
+	background-color: black;
+	height: 350px;
+	width: 100%;
+	position: relative;
+	border: 1px solid white;
+}
+
+#next {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	display: none;
+}
+
+p {
+	color: white;
+}
