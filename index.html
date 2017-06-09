@@ -11,11 +11,33 @@
 </head>
 <body>
 	<div class="container">
+
+		<div id="battleDiv">
+		</div>
+
 		<div id="narrativeBox">
+
 			<p id="narrativeText">You wake up from a strange dream, feverish and sweating. The details immediately slip away from you and the only thing you can remember is a dull chant in a language you've never heard. Your head is still pounding to its rhythm. You look up from bed and realize that, against all logic, the door has disappeared from your bedroom. What do you do?
 			</p>
 			<button id="next">Next</button>
 		</div>
+
+		<div id="actionDiv">
+			<button class='battleButton' id='fightButton'>Fight</button>
+			<button class='battleButton' id='magicButton'>Magic</button>
+			<button class='battleButton' id='specialButton'>Special</button>
+			<button class='battleButton' id='runButton'>Run</button>
+				<ul class="moveList" id="fightMoves">
+				</ul>
+				<ul class="moveList" id="magicMoves">
+				</ul>
+				<ul class="moveList" id="specialMoves">
+				</ul>
+		</div>
+
+		<div id="feedDiv">
+		</div>
+
 		<div id="choiceBox">
 			<p class="choiceElement choiceText" id="choiceText1">Go back to sleep</p>
 				<button class="choiceElement choiceButton" id="choiceButton1">Choose</button>

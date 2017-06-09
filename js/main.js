@@ -2,18 +2,44 @@ var playerCharacter = {
 	health: 10,
 	sanity: 15,
 	strength: 5,
+	fight: [punch = {
+				name: "punch",
+				power: 3,
+				speed: 1,
+			},
+			kick = {
+				name: "kick",
+				power: 5,
+				speed: 2
+			},
+			flail = {
+				name: "flail",
+				power: 7,
+				speed: 3
+			}],
 	inventory: [],
-	spells: [],
+	spells: [shrivel = {
+				power: 10,
+				speed: 3,
+				cost: 5
+			}],
+	actions: 2,
 	choice: 0,
 	alive: true
 };
 
 var numCultists = 3;
 
+var cultist = {
+	health: 10,
+	strength: 2
+};
 
+
+//All of this functionality is the choose your own adventure component
 var narrativeText = $("#narrativeText");
 
-
+var narrativeBox = $("#narrativeBox");
 var choiceBox = $("#choiceBox");
 var choiceItems = $(".choiceElement");
 
@@ -268,3 +294,73 @@ nextButton[0].addEventListener("click", function () {
 
 })
 
+
+//programming for the battle component of the game starts here
+var battleDiv;
+var actionDiv;
+var feedDiv;
+
+//These are the buttons that live inside the actionDiv
+var fightButton = $("#fightButton");
+var magic;
+var special;
+var run;
+
+var turn = 1;
+
+
+
+var createEnemy = function (name,strength,health) {
+}
+
+//use the 'arguments.' object similarly to this to pass multiple enemies to this function
+//This function changes the gameboard to the battle arrangement and creates the buttons you use to fight
+var initiateBattle = function () {
+	narrativeBox.hide();
+	choiceBox.hide();
+	battleDiv = $("#battleDiv");
+	actionDiv = $("#actionDiv");
+	feedDiv = $("#feedDiv");
+	battleDiv.fadeIn();
+	actionDiv.fadeIn();
+	feedDiv.fadeIn();
+	//This section of code attaches event listeners to the four different action buttons
+	//insert a ul that holds the different move categories
+	//each of the li's in that ul hold an additional ul that gives options
+	//selecting one of those UL's triggers the specified move
+}
+
+var endBattle = function () {
+	battleDiv.hide();
+	actionDiv.hide();
+	feedDiv.hide();
+	narrativeBox.fadeIn();
+	choiceBox.fadeIn();
+}
+
+var attackFunction = function (target, power, speed) {
+	target.health -= power;
+	playerCharacter.actions = (playerCharacter.actions - speed);
+};
+
+var fightButtonEventListener = function () {
+	fightButton[0].addEventListener("click", function (){
+		for (i = 0; i < playerCharacter.fight.length; i++) {
+			var newMove = $("<li class='fightMove'></li>");
+			newMove.text(playerCharacter.fight[i].name);
+			$("#fightMoves")[0].append(newMove[0]);
+		}
+		fightMoves = $(".fightMove");
+		for (i = 0; i < fightMoves.length; i++) {
+			indexNum = i;
+			console.log(indexNum);
+			fightMoves[i].addEventListener("click", function () {
+				attackFunction(cultist,playerCharacter.fight[indexNum].power, playerCharacter.fight[indexNum].speed);
+				console.log(playerCharacter);
+			})
+		}
+	
+	})
+}
+
+fightButtonEventListener();

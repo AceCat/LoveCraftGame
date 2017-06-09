@@ -30,3 +30,34 @@
 p {
 	color: white;
 }
+
+#battleDiv {
+	background-color: white;
+	height: 50%;
+	width: 100%;
+	border: 1px solid black;
+	box-sizing: border-box;
+	display: none;
+}
+
+#actionDiv {
+	background-color: grey;
+	height: 50%;
+	width: 35%;
+	border-right: 1px solid black;
+	float: left;
+	display: none;
+}
+
+#feedDiv {
+	background-color: teal;
+	height: 50%;
+	width: 63%;
+	float: right;
+	display: none;
+}
+
+.battleButton {
+	display: block;
+
+}
