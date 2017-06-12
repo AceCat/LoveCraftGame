@@ -58,6 +58,25 @@ p {
 }
 
 .battleButton {
-	display: block;
+	display: inline-block;
 
+}
+
+#buttonDiv {
+	width: 50%;
+	float: left;
+}
+
+#fightMoves {
+	list-style: none;
+	float: right;
+}
+
+#magicMoves {
+	list-style: none;
+	float: right;
+}
+
+#playerImage {
+	width: 300px;
 }

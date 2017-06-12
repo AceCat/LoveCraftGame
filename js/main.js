@@ -19,18 +19,50 @@ var playerCharacter = {
 			}],
 	inventory: [],
 	spells: [shrivel = {
+				name: "shrivel",
 				power: 10,
 				speed: 3,
 				cost: 5
 			}],
 	actions: 2,
 	choice: 0,
-	alive: true
+	alive: true,
+	experience: 0
 };
 
-var numCultists = 3;
+var enemyCounter = 0;
+
+
+function Enemy(name,hp,dmg,exp,img){
+  this.name = name;
+  this.health = hp;
+  this.strength = dmg;
+  this.xp = exp;
+  this.img = img;
+  this.id = "";
+  this.spawn = function() {
+		var sprite = $("<img/>");
+		sprite.attr("src", this.img);
+		sprite.attr("id", this.name + enemyCounter);
+		$("#battleDiv").append(sprite);
+		this.id = this.name + enemyCounter;
+		 enemyCounter++;
+
+  };
+  this.attack = function() {
+
+  }
+}
+
+//This array will hold the different kinds of enemies you can encounter in the game
+enemyTypes = [];
+
+//Let's create some different enemy types and push them into an array
+// enemyTypes.push(new Enemy("Cultist",7,2,5,"imgs/cultist.gif"));
+// enemyTypes.push(new Enemy("Ghoul",10,3,10));
 
 var cultist = {
+	name: "jerry",
 	health: 10,
 	strength: 2
 };
@@ -52,9 +84,9 @@ var	choiceButton1 = $("#choiceButton1");
 var	choiceButton2 = $("#choiceButton2");
 var	choiceButton3 = $("#choiceButton3");
 
-var choiceArray = $([
+var choiceArray = [
 	choiceButton1, choiceButton2, choiceButton3
-	])
+	]
 
 var nextButton = $("#next");
 
@@ -104,12 +136,12 @@ var createNewButton = function (choiceNum) {
 
 var openDoorChoicesText = ["continue down the hallway", "go back inside", "sit down"];
 
-choiceArray[0][0].addEventListener("click", function () {
+choiceArray[0].click(function () {
 	updateNarrative("Doors don't just disappear, and even if they did you have nowhere to go. You roll over in your bed and try to go back to sleep, hoping it will help combat your pounding headache. As you slip into sleep you're senses are assualted, rapidfire, with a torrent of unspeakable images. Grotesque and malformed creatures whose very bodies shift and rearrange themselves as you look upon them. You're jolted back awake with a further reduced grasp on reality. The door is still gone.")
 	playerCharacter.sanity = playerCharacter.sanity - 5;
 })
 
-choiceArray[1][0].addEventListener("click", function() {
+choiceArray[1].click(function() {
 	updateNarrative("You push yourself out of bed and begin to pace through your bedroom. You switch on your bedside light, but it does little to illuminate the oppressive darkness. In the context of your dream even this familiar place feels strange and sinister. You run your hand over where the door used to be and only feel soft wood. You take a step back and find your feet sinking into the ground. You look down - a rug that has never been in your room has appeared. It's adorned with unfamiliar symbols. The pounding in your head reaches an intense crescendo and you find yourself dumped into a hallway on the first floor. From your kitchen you hear voices - they're chanting the same otherwordly litany from your dream! What do you do?");
 	playerCharacter.location = "hallway"
 	choiceItems.fadeOut();
@@ -118,10 +150,10 @@ choiceArray[1][0].addEventListener("click", function() {
 	choiceText3.text("");
 	createNewButton(4);
 	createNewButton(5);
-	choiceArray[0][0].remove();
-	choiceArray[1][0].remove();
-	choiceText1.append(choiceArray[3][0]);
-	choiceText2.append(choiceArray[4][0]);
+	choiceArray[0].remove();
+	choiceArray[1].remove();
+	choiceText1.append(choiceArray[3]);
+	choiceText2.append(choiceArray[4]);
 	choiceText.fadeIn();
 	choiceArray[3].fadeIn();
 	choiceArray[4].fadeIn();
@@ -129,7 +161,7 @@ choiceArray[1][0].addEventListener("click", function() {
 	addEventListeners();
 });
 
-choiceArray[2][0].addEventListener("click", function() {
+choiceArray[2].click(function() {
 	updateNarrative("Really? You're going straight out your window? Jeez man, you're nuts. But I admire the dedication. You roll out of bed, stretch your legs for a second, open your window, and then leap outside. You hit the ground hard and the wind is knocked out of you. As you roll over and try to regain your composure you see a hooded figure on your porch gesturing towards you and shouting towards someone inside. What do you do?");
 	choiceItems.fadeOut();
 	choiceText1.text("They should be scared of you. You just jumped out a window. Press the attack!");
@@ -137,10 +169,10 @@ choiceArray[2][0].addEventListener("click", function() {
 	choiceText3.text("");
 	createNewButton(4);
 	createNewButton(8);
-	choiceArray[0][0].remove();
-	choiceText1.append(choiceArray[3][0])
-	choiceArray[1][0].remove();
-	choiceText2.append(choiceArray[4][0])
+	choiceArray[0].remove();
+	choiceText1.append(choiceArray[3])
+	choiceArray[1].remove();
+	choiceText2.append(choiceArray[4])
 	choiceText.fadeIn();
 	choiceArray[3].fadeIn();
 	choiceArray[4].fadeIn();
@@ -158,38 +190,38 @@ var addEventListeners = function () {
 			choiceText2.text("This seems like a good time to have a baseball bat")
 			createNewButton(6);
 			createNewButton(7);
-			choiceArray[3][0].remove();
-			choiceArray[4][0].remove();
-			choiceText1.append(choiceArray[5][0])
-			choiceText2.append(choiceArray[6][0])
+			choiceArray[3].remove();
+			choiceArray[4].remove();
+			choiceText1.append(choiceArray[5])
+			choiceText2.append(choiceArray[6])
 			choiceText.fadeIn();
 			choiceArray[5].fadeIn();
 			choiceArray[6].fadeIn();
 			playerCharacter.choice = 2;
 			addEventListeners();
 		})
-		choiceArray[3][0].addEventListener("click", function() {
+		choiceArray[3].click(function() {
 			updateNarrative("This is getting ridiculous. They've woken you up, they're in your house, and somehow they stole your DOOR. You stride down into the hallway, the chanting getting louder as you approach the kitchen. You round the corner and see a trio of hooded cultists doing god knows what near your island. Their eyes register a moment of surprise before they lunge towards you");
 			//need to code you entering battle mode here
-			choiceItems.fadeOut();
+			initiateBattle();
 		})
 	}
 	else if (playerCharacter.choice === 3) {
-		choiceArray[3][0].addEventListener("click", function() {
+		choiceArray[3].click(function() {
 			updateNarrative("You're a mad man! You charge at the hooded figure.")
-			//need to code entering battle mode here
+			initiateBattle();
 		})
-		choiceArray[4][0].addEventListener("click", function() {
+		choiceArray[4].click(function() {
 			updateNarrative("You sprint away from your house. Behind you there's shouting as the intruders begin to give chase. You have a choice, try to lose them in the woods or run towards town?");
 			choiceItems.fadeOut();
 			choiceText1.text("The woods! Lose em in the trees!");
 			choiceText2.text("Spooky woods? No thanks. You're headed to civilization")
 			createNewButton(9);
 			createNewButton(10);
-			choiceArray[3][0].remove();
-			choiceArray[4][0].remove();
-			choiceText1.append(choiceArray[5][0])
-			choiceText2.append(choiceArray[6][0])
+			choiceArray[3].remove();
+			choiceArray[4].remove();
+			choiceText1.append(choiceArray[5])
+			choiceText2.append(choiceArray[6])
 			choiceText.fadeIn();
 			choiceArray[5].fadeIn();
 			choiceArray[6].fadeIn();
@@ -198,14 +230,14 @@ var addEventListeners = function () {
 		})
 	}
 	else if (playerCharacter.choice === 4) {
-		choiceArray[5][0].addEventListener("click", function () {
+		choiceArray[5].click(function () {
 			updateNarrative("You run through the trees with reckless abandon, the branches whipping your arms and face as you plow ahead. You can't stop, you can hear them moving behind you, cursing and panting as their thick robes catch on roots and branches. You as you move deeper into the woods you hear a deep rumbling. In a second the forest seems to turn against you - the roots take on a life of their own shifting and darting to harass you and make you fall. You trip and the forest roots coil around your ankles, arms, and neck. You fight as hard as you can but there is no denying the implacable strenght of the possessed roots. The air is choked from your body and you die. Sad!")
 			playerCharacter.alive = false;
 			choiceItems.fadeOut();
 			gameOver();
 			//add a reset button to appear
 		})
-		choiceArray[6][0].addEventListener("click", function() {
+		choiceArray[6].click(function() {
 			updateNarrative("You leap the fence at the edge of your property towards town. You can hear the cultists behind you, but their heavy robes and their tendency to read latin instead of exercising leaves you with a distinct edge. After a frantic mile of running, you've lost them. You make it into town, scared but alive. What were they doing at your house? What kind of dark horror are they going to visit on the world? What the hell happened to your door? You'll never know and spend the rest of yuor life trying to forget that this happened.");
 			choiceItems.fadeOut();
 			gameOver();
@@ -213,12 +245,13 @@ var addEventListeners = function () {
 		})
 	}
 	else if (playerCharacter.choice === 2) {
-		choiceArray[5][0].addEventListener("click", function() {
+		choiceArray[5].click(function() {
 			updateNarrative("You creep up behind the hooded figure. You wouldn't normally consider yourself a morning person, and usually wouldn't dream of sneaking up behind a cultist and knocking him out before you've had your coffee, but adrenaline and rage can accomplish some incredible things. You put him in the rear naked choke and the sucker is passed out in no time. Unfortunately, as you're lowering him to the floor one of his friends turns around, spots you, and charges you.");
 			numCultists--;
+			initiateBattle();
 			//add a battle button
 		})
-		choiceArray[6][0].addEventListener("click", function() {
+		choiceArray[6].click(function() {
 			updateNarrative("You sneak away from the figures in your kitchen. Your progress is agonizing as you expect one of them to shout in discovery at any moment, but whether through guile our luck you make your way to the back door and grab the baseball bat. Nice work! Now what are you going to do with it?");
 			playerCharacter.strength = 8;
 			choiceItems.fadeOut();
@@ -237,17 +270,17 @@ var addEventListeners = function () {
 		)
 	}
 	else if (playerCharacter.choice === 5) {
-		choiceArray[7][0].addEventListener("click", function() {
+		choiceArray[7].click(function() {
 			updateNarrative("You sprint away from your house. Behind you there's shouting as the intruders begin to give chase. You have a choice, try to lose them in the woods or run towards town?");
 			choiceItems.fadeOut();
 			choiceText1.text("The woods! Lose em in the trees!");
 			choiceText2.text("Spooky woods? No thanks. You're headed to civilization")
 			createNewButton(9);
 			createNewButton(10);
-			choiceArray[3][0].remove();
-			choiceArray[7][0].remove();
-			choiceText1.append(choiceArray[8][0]);
-			choiceText2.append(choiceArray[9][0]);
+			choiceArray[3].remove();
+			choiceArray[7].remove();
+			choiceText1.append(choiceArray[8]);
+			choiceText2.append(choiceArray[9]);
 			choiceText.fadeIn();
 			choiceArray[8].fadeIn();
 			choiceArray[9].fadeIn();
@@ -257,7 +290,7 @@ var addEventListeners = function () {
 
 	}
 	else if (playerCharacter.choice === 6) {
-		choiceArray[8][0].addEventListener("click", function () {
+		choiceArray[8].click(function () {
 			updateNarrative("You run through the trees with reckless abandon, the branches whipping your arms and face as you plow ahead. You can't stop, you can hear them moving behind you, cursing and panting as their thick robes catch on roots and branches. As you move deeper into the woods you hear a deep rumbling. In a second the forest seems to turn against you - the roots take on a life of their own shifting and darting to harass you and make you fall. You trip and the forest roots coil around your ankles, arms, and neck. You fight as hard as you can but there is no denying the implacable strenght of the possessed roots. The air is choked from your body and you die. Sad!")
 			playerCharacter.alive = false;
 			gameOver();
@@ -265,7 +298,7 @@ var addEventListeners = function () {
 
 
 		})
-		choiceArray[9][0].addEventListener("click", function() {
+		choiceArray[9].click(function() {
 			updateNarrative("You leap the fence at the edge of your property towards town. You can hear the cultists behind you, but their heavy robes and their tendency to read latin instead of exercising leaves you with a distinct edge. After a frantic mile of running, you've lost them. You make it into town, scared but alive. What were they doing at your house? What kind of dark horror are they going to visit on the world? What the hell happened to your door? You'll never know and spend the rest of yuor life trying to forget that this happened.");
 			gameOver();
 			choiceItems.fadeOut();
@@ -274,27 +307,6 @@ var addEventListeners = function () {
 	}
 }
 
-// choiceButton.addEventListener("click", function () {
-// 	updateNarrative("You opened the door");
-// 	playerCharacter.health--;
-// 	choicesItems = $(".choiceElement")
-// 	choicesItems.fadeOut();
-// 	for (i = 0; i < openDoorChoicesText.length; i++) {
-// 		choiceText[i].innerHTML(openDoorChoicesText[i])
-// 		console.log(openDoorChoicesText[i])
-// 	}
-// 	nextButton.fadeIn();
-// 	}
-// )
-
-nextButton[0].addEventListener("click", function () {
-	choicesItems = $(".choiceElement");
-	choicesItems.fadeIn();
-	nextButton.fadeOut();
-
-})
-
-
 //programming for the battle component of the game starts here
 var battleDiv;
 var actionDiv;
@@ -302,7 +314,7 @@ var feedDiv;
 
 //These are the buttons that live inside the actionDiv
 var fightButton = $("#fightButton");
-var magic;
+var magicButton = $('#magicButton');
 var special;
 var run;
 
@@ -310,8 +322,6 @@ var turn = 1;
 
 
 
-var createEnemy = function (name,strength,health) {
-}
 
 //use the 'arguments.' object similarly to this to pass multiple enemies to this function
 //This function changes the gameboard to the battle arrangement and creates the buttons you use to fight
@@ -330,6 +340,15 @@ var initiateBattle = function () {
 	//selecting one of those UL's triggers the specified move
 }
 
+// spawnEnemy = function (num, kind) {
+// 	for (i = 0; i < num; i++) {
+// 		var enemy = new enemyTypes[kind];
+// 		var sprite = $("<img/>");
+// 		sprite.attr("src", enemyTypes[kind].img);
+// 		battleDiv.append(sprite);
+// 	}
+// }
+
 var endBattle = function () {
 	battleDiv.hide();
 	actionDiv.hide();
@@ -338,29 +357,65 @@ var endBattle = function () {
 	choiceBox.fadeIn();
 }
 
-var attackFunction = function (target, power, speed) {
+var attackFunction = function (target, name, power, speed) {
+	target = 
 	target.health -= power;
 	playerCharacter.actions = (playerCharacter.actions - speed);
+	var newFeedItem = $("<li></li>")
+	newFeedItem.text("You hit " + target.name + " with " + name + " for " + power + " damage.")
+	$("#theFeed").append(newFeedItem);
 };
 
 var fightButtonEventListener = function () {
-	fightButton[0].addEventListener("click", function (){
-		for (i = 0; i < playerCharacter.fight.length; i++) {
-			var newMove = $("<li class='fightMove'></li>");
-			newMove.text(playerCharacter.fight[i].name);
-			$("#fightMoves")[0].append(newMove[0]);
+	fightButton.click(function (){
+		if (fightMoves.length === undefined) {
+			$("#magicMoves").empty();
+			$('.magicMoves').remove();
+			magicMoves.length = undefined;
+			for (i = 0; i < playerCharacter.fight.length; i++) {
+				var newMove = $("<li class='fightMove'></li>");
+				newMove.text(playerCharacter.fight[i].name);
+				$("#fightMoves")[0].append(newMove[0]);
+			}
+			fightMoves = $(".fightMove");
+			for (i = 0; i < fightMoves.length; i++) {
+				var newMove = $(fightMoves[i]);
+				newMove.click(function () {
+					var index = $(this).index();
+					attackFunction(cultist, playerCharacter.fight[index].name, playerCharacter.fight[index].power, playerCharacter.fight[index].speed);
+				})
+			}
+		
 		}
-		fightMoves = $(".fightMove");
-		for (i = 0; i < fightMoves.length; i++) {
-			indexNum = i;
-			console.log(indexNum);
-			fightMoves[i].addEventListener("click", function () {
-				attackFunction(cultist,playerCharacter.fight[indexNum].power, playerCharacter.fight[indexNum].speed);
-				console.log(playerCharacter);
+		}
+		)
+	}
+
+var magicButtonEventListener = function () {
+	magicButton.click(function (){
+		if (magicMoves.length === undefined) {
+		$("#fightMoves").empty();
+		$('.fightMoves').remove();
+		fightMoves.length = undefined;
+		for (i = 0; i < playerCharacter.spells.length; i++) {
+			var newSpell = $("<li class='magicMove'></li>");
+			newSpell.text(playerCharacter.spells[i].name);
+			$("#magicMoves").append(newSpell);
+		}
+		magicMoves = $(".magicMove");
+		for (i = 0; i < magicMoves.length; i++) {
+			var newMove = $(magicMoves[i]);
+			newMove.click(function () {
+				var index = $(this).index();
+				attackFunction(cultist, playerCharacter.spells[index].name, playerCharacter.spells[index].power, playerCharacter.spells[index].speed);
 			})
 		}
 	
-	})
+	}
+	}
+	)
 }
 
+
 fightButtonEventListener();
+magicButtonEventListener();
