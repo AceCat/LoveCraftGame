@@ -6,16 +6,19 @@ var playerCharacter = {
 				name: "punch",
 				power: 3,
 				speed: 1,
+				cost: 0
 			},
 			kick = {
 				name: "kick",
 				power: 5,
-				speed: 2
+				speed: 2,
+				cost: 0
 			},
 			flail = {
 				name: "flail",
 				power: 7,
-				speed: 3
+				speed: 3,
+				cost: 0
 			}],
 	inventory: [],
 	spells: [shrivel = {
@@ -31,6 +34,9 @@ var playerCharacter = {
 };
 
 var enemyCounter = 0;
+var numEnemies = 0;
+
+var numCultists = 3;
 
 
 function Enemy(name,hp,dmg,exp,img){
@@ -41,25 +47,48 @@ function Enemy(name,hp,dmg,exp,img){
   this.img = img;
   this.id = "";
   this.spawn = function() {
+  		numEnemies++;
 		var sprite = $("<img/>");
 		sprite.attr("src", this.img);
 		sprite.attr("id", this.name + enemyCounter);
-		$("#battleDiv").append(sprite);
+		$("#position" + numEnemies).append(sprite);
 		this.id = this.name + enemyCounter;
+		var self = this;
+		sprite.click(function() {
+			self.health = (self.health - currentAttack.power);
+			playerCharacter.sanity = (playerCharacter.sanity - currentAttack.cost)
+			playerCharacter.actions = (playerCharacter.actions - currentAttack.speed);
+			var newFeedItem = $("<li></li>")
+			newFeedItem.text("You hit " + self.name + " with " + currentAttack.name + " for " + currentAttack.power + " damage.")
+			console.log(this.name);
+			$("#theFeed").append(newFeedItem);
+			if (self.health <= 0) {
+				var newFeedItem = $("<li></li>")
+				newFeedItem.text(self.name + " has been killed.")
+				$("#theFeed").append(newFeedItem);
+				playerCharacter.experience = (playerCharacter.experience + self.xp)
+				delete self.id;
+				numEnemies--;
+				this.remove();
+			}
+			if (numEnemies <= 0) {
+				var newFeedItem = $("<li></li>")
+				newFeedItem.text("You successfully defeated all the enemies!")
+				$("#theFeed").append(newFeedItem);
+				$("#nextButton").fadeIn();
+			} 	
+  })
 		 enemyCounter++;
 
   };
-  this.attack = function() {
 
-  }
 }
 
 //This array will hold the different kinds of enemies you can encounter in the game
 enemyTypes = [];
-
 //Let's create some different enemy types and push them into an array
-// enemyTypes.push(new Enemy("Cultist",7,2,5,"imgs/cultist.gif"));
-// enemyTypes.push(new Enemy("Ghoul",10,3,10));
+	enemyTypes.push(new Enemy("Cultist",7,2,5,"imgs/cultist.gif"));
+	enemyTypes.push(new Enemy("Ghoul",10,3,10));
 
 var cultist = {
 	name: "jerry",
@@ -203,13 +232,13 @@ var addEventListeners = function () {
 		choiceArray[3].click(function() {
 			updateNarrative("This is getting ridiculous. They've woken you up, they're in your house, and somehow they stole your DOOR. You stride down into the hallway, the chanting getting louder as you approach the kitchen. You round the corner and see a trio of hooded cultists doing god knows what near your island. Their eyes register a moment of surprise before they lunge towards you");
 			//need to code you entering battle mode here
-			initiateBattle();
+			initiateBattle(numCultists);
 		})
 	}
 	else if (playerCharacter.choice === 3) {
 		choiceArray[3].click(function() {
 			updateNarrative("You're a mad man! You charge at the hooded figure.")
-			initiateBattle();
+			initiateBattle(numCultists);
 		})
 		choiceArray[4].click(function() {
 			updateNarrative("You sprint away from your house. Behind you there's shouting as the intruders begin to give chase. You have a choice, try to lose them in the woods or run towards town?");
@@ -248,7 +277,8 @@ var addEventListeners = function () {
 		choiceArray[5].click(function() {
 			updateNarrative("You creep up behind the hooded figure. You wouldn't normally consider yourself a morning person, and usually wouldn't dream of sneaking up behind a cultist and knocking him out before you've had your coffee, but adrenaline and rage can accomplish some incredible things. You put him in the rear naked choke and the sucker is passed out in no time. Unfortunately, as you're lowering him to the floor one of his friends turns around, spots you, and charges you.");
 			numCultists--;
-			initiateBattle();
+			playerCharacter.experience += 5;
+			initiateBattle(numCultists);
 			//add a battle button
 		})
 		choiceArray[6].click(function() {
@@ -308,9 +338,10 @@ var addEventListeners = function () {
 }
 
 //programming for the battle component of the game starts here
-var battleDiv;
-var actionDiv;
-var feedDiv;
+var battleDiv = $("#battleDiv");
+var actionDiv = $("#actionDiv");
+var feedDiv = $("#feedDiv");
+var nextButton = $("#nextButton")
 
 //These are the buttons that live inside the actionDiv
 var fightButton = $("#fightButton");
@@ -325,7 +356,7 @@ var turn = 1;
 
 //use the 'arguments.' object similarly to this to pass multiple enemies to this function
 //This function changes the gameboard to the battle arrangement and creates the buttons you use to fight
-var initiateBattle = function () {
+var initiateBattle = function (numEnemies) {
 	narrativeBox.hide();
 	choiceBox.hide();
 	battleDiv = $("#battleDiv");
@@ -334,6 +365,10 @@ var initiateBattle = function () {
 	battleDiv.fadeIn();
 	actionDiv.fadeIn();
 	feedDiv.fadeIn();
+	for (i = 0; i < numEnemies; i++) {
+		var newEnemy = new Enemy("Cultist",7,2,5,"imgs/pixelCultist.gif");
+		newEnemy.spawn();
+	}
 	//This section of code attaches event listeners to the four different action buttons
 	//insert a ul that holds the different move categories
 	//each of the li's in that ul hold an additional ul that gives options
@@ -350,12 +385,17 @@ var initiateBattle = function () {
 // }
 
 var endBattle = function () {
-	battleDiv.hide();
-	actionDiv.hide();
-	feedDiv.hide();
+	battleDiv.fadeOut();
+	actionDiv.fadeOut();
+	feedDiv.fadeOut();
 	narrativeBox.fadeIn();
 	choiceBox.fadeIn();
 }
+
+nextButton.on("click", function() {
+	endBattle();
+	nextButton.fadeOut();
+})
 
 var attackFunction = function (target, name, power, speed) {
 	target = 
@@ -365,6 +405,13 @@ var attackFunction = function (target, name, power, speed) {
 	newFeedItem.text("You hit " + target.name + " with " + name + " for " + power + " damage.")
 	$("#theFeed").append(newFeedItem);
 };
+
+var currentAttack = {
+	name: "",
+	power: "",
+	speed: "",
+	cost: ""
+}
 
 var fightButtonEventListener = function () {
 	fightButton.click(function (){
@@ -382,14 +429,17 @@ var fightButtonEventListener = function () {
 				var newMove = $(fightMoves[i]);
 				newMove.click(function () {
 					var index = $(this).index();
-					attackFunction(cultist, playerCharacter.fight[index].name, playerCharacter.fight[index].power, playerCharacter.fight[index].speed);
-				})
+					currentAttack.name = playerCharacter.fight[index].name;
+					currentAttack.power = playerCharacter.fight[index].power;
+					currentAttack.speed = playerCharacter.fight[index].speed;
+					currentAttack.cost = playerCharacter.fight[index].cost;
 			}
-		
-		}
-		}
 		)
-	}
+		}
+		}
+		
+	})
+}
 
 var magicButtonEventListener = function () {
 	magicButton.click(function (){
