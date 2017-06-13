@@ -33,10 +33,49 @@ var playerCharacter = {
 	experience: 0
 };
 
+var currentEnemyArray = [];
 var enemyCounter = 0;
 var numEnemies = 0;
 
 var numCultists = 3;
+
+//Here are the variables that determine what turn it is
+var turn = 1;
+
+var turnSwitch = setInterval(function(){
+	if (playerCharacter.actions > 0) {
+	} else if (playerCharacter.health <= 0) {
+		clearInterval();
+	} else {
+		for (i = 0; i < currentEnemyArray.length; i++) {
+			currentEnemyArray[i].attack();
+		}
+	turn = 1;
+	playerCharacter.actions = 2;
+	}
+
+
+}, 100);
+
+var uDead = setInterval(function() {
+	if (playerCharacter.health <= 0) {
+		updateNarrative("You have died. Sorry!")
+		newBattleMessage("You have been killed.")
+		playerCharacter.actions = 0;
+		gameOver();
+		clearInterval(uDead);
+
+	}
+
+}, 100)
+
+var newBattleMessage = function (str) {
+			var newFeedItem = $("<li></li>");
+			newFeedItem.text(str);
+			$("#theFeed").append(newFeedItem);
+			var feedDiv = $("#feedDiv");
+  			feedDiv.scrollTop(feedDiv[0].scrollHeight);
+};
 
 
 function Enemy(name,hp,dmg,exp,img){
@@ -46,41 +85,67 @@ function Enemy(name,hp,dmg,exp,img){
   this.xp = exp;
   this.img = img;
   this.id = "";
+  this.attack = function () {
+		playerCharacter.health = (playerCharacter.health - this.strength);
+		newBattleMessage(this.name + " hit you for " + this.strength + " damage")
+		$("#playerHealthBar").attr("value", playerCharacter.health);
+	};
+
   this.spawn = function() {
   		numEnemies++;
 		var sprite = $("<img/>");
 		sprite.attr("src", this.img);
 		sprite.attr("id", this.name + enemyCounter);
 		$("#position" + numEnemies).append(sprite);
+		console.log(this);
 		this.id = this.name + enemyCounter;
+		this.index = enemyCounter;
+		this.enemyAlive = true;
 		var self = this;
+		var enemyHealthBar = $("<progress max=" + this.health + "></progress>")
+		$("#position" + numEnemies).append(enemyHealthBar);
 		sprite.click(function() {
+			if (playerCharacter.actions >= currentAttack.speed) {
 			self.health = (self.health - currentAttack.power);
+			$(this).attr("class", "enemy");
 			playerCharacter.sanity = (playerCharacter.sanity - currentAttack.cost)
 			playerCharacter.actions = (playerCharacter.actions - currentAttack.speed);
+			newBattleMessage("You hit " + self.name + " with " + currentAttack.name + " for " + currentAttack.power + " damage.")
+			enemyHealthBar.attr("value", self.health);
+		} else if (playerCharacter.actions < currentAttack.speed && playerCharacter.actions > 0) {
 			var newFeedItem = $("<li></li>")
-			newFeedItem.text("You hit " + self.name + " with " + currentAttack.name + " for " + currentAttack.power + " damage.")
-			console.log(this.name);
+			newFeedItem.text("You don't have enough actions to make that attack, pick another.")
 			$("#theFeed").append(newFeedItem);
+		} else {
+			turn = 0;
+		}
 			if (self.health <= 0) {
 				var newFeedItem = $("<li></li>")
 				newFeedItem.text(self.name + " has been killed.")
 				$("#theFeed").append(newFeedItem);
 				playerCharacter.experience = (playerCharacter.experience + self.xp)
 				delete self.id;
+				currentEnemyArray.splice(self.index, 1);
+				self.enemyAlive = false;
+				$(self).removeAttr("class");
 				numEnemies--;
 				this.remove();
+				enemyHealthBar.remove();
 			}
 			if (numEnemies <= 0) {
 				var newFeedItem = $("<li></li>")
 				newFeedItem.text("You successfully defeated all the enemies!")
 				$("#theFeed").append(newFeedItem);
 				$("#nextButton").fadeIn();
+				playerCharacter.choice = 9;
+				addEventListeners();
+				enemyCounter = 0;
 			} 	
   })
 		 enemyCounter++;
 
   };
+
 
 }
 
@@ -121,6 +186,11 @@ var nextButton = $("#next");
 
 
 var gameOver = function () {
+	battleDiv.fadeOut();
+	feedDiv.fadeOut();
+	actionDiv.fadeOut();
+	narrativeBox.fadeIn();
+	choiceBox.fadeIn();
     choiceBox.append("<button id='reset'>Reset</button>")
     var resetButton = $("#reset");
     $(".choiceButton").remove();
@@ -283,6 +353,13 @@ var addEventListeners = function () {
 		})
 		choiceArray[6].click(function() {
 			updateNarrative("You sneak away from the figures in your kitchen. Your progress is agonizing as you expect one of them to shout in discovery at any moment, but whether through guile our luck you make your way to the back door and grab the baseball bat. Nice work! Now what are you going to do with it?");
+			var Bat = {
+				name: "Baseball Bat",
+				power: 6,
+				speed: 1,
+				cost: 0
+			};
+			playerCharacter.fight.push(Bat);
 			playerCharacter.strength = 8;
 			choiceItems.fadeOut();
 			choiceText1.text("Alright, time for some batting practice. Head back into the kitchen and show those intruders what's up")
@@ -291,6 +368,9 @@ var addEventListeners = function () {
 			choiceArray[5][0].remove();
 			choiceArray[6][0].remove();
 			choiceText1.append(choiceArray[3][0]);
+				choiceArray[3].click(function() {
+					initiateBattle(3)
+				})
 			choiceText2.append(choiceArray[7][0]);
 			choiceText.fadeIn();
 			playerCharacter.choice = 5;
@@ -335,6 +415,9 @@ var addEventListeners = function () {
 
 		})
 	}
+	else if (playerCharacter.choice === 9) {
+		updateNarrative("You stand victorious, the intruders beat to a pulp. Your house is safe for now - but you're left with so many questions. Who are these people? Why did they come to your house? Where is your door at?")
+	}
 }
 
 //programming for the battle component of the game starts here
@@ -367,6 +450,7 @@ var initiateBattle = function (numEnemies) {
 	feedDiv.fadeIn();
 	for (i = 0; i < numEnemies; i++) {
 		var newEnemy = new Enemy("Cultist",7,2,5,"imgs/pixelCultist.gif");
+		currentEnemyArray.push(newEnemy);
 		newEnemy.spawn();
 	}
 	//This section of code attaches event listeners to the four different action buttons
@@ -457,7 +541,10 @@ var magicButtonEventListener = function () {
 			var newMove = $(magicMoves[i]);
 			newMove.click(function () {
 				var index = $(this).index();
-				attackFunction(cultist, playerCharacter.spells[index].name, playerCharacter.spells[index].power, playerCharacter.spells[index].speed);
+				currentAttack.name = playerCharacter.spells[index].name;
+				currentAttack.power = playerCharacter.spells[index].power;
+				currentAttack.speed = playerCharacter.spells[index].speed;
+				currentAttack.cost = playerCharacter.spells[index].cost;;
 			})
 		}
 	

@@ -43,7 +43,7 @@ p {
 }
 
 #actionDiv {
-	background-color: grey;
+	background-color: black;
 	height: 50%;
 	width: 35%;
 	border-right: 1px solid black;
@@ -52,11 +52,16 @@ p {
 }
 
 #feedDiv {
-	background-color: teal;
+	background-color: black;
 	height: 50%;
 	width: 63%;
 	float: right;
 	display: none;
+	overflow: auto;
+}
+
+#theFeed {
+	color: white;
 }
 
 .battleButton {
