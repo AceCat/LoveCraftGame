@@ -14,7 +14,13 @@ var playerCharacter = {
 				speed: 2,
 				cost: 0
 			}],
-	inventory: [],
+	inventory: [whiskey = {
+					name: "Whiskey",
+					charges: 1,
+					use: function () {
+						playerCharacter.sanity += 5
+					}
+	}],
 	spells: [],
 	actions: 2,
 	choice: 0,
@@ -500,7 +506,7 @@ var nextButton = $("#nextButton")
 //These are the buttons that live inside the actionDiv
 var fightButton = $("#fightButton");
 var magicButton = $('#magicButton');
-var special;
+var itemButton = $("#itemButton");
 var run;
 
 var turn = 1;
@@ -574,7 +580,9 @@ var fightButtonEventListener = function () {
 	fightButton.click(function (){
 		if (fightMoves.length === undefined) {
 			$("#magicMoves").empty();
+			$("#itemMoves").empty();
 			$('.magicMoves').remove();
+			$(".itemMoves").remove();
 			magicMoves.length = undefined;
 			for (i = 0; i < playerCharacter.fight.length; i++) {
 				var newMove = $("<li class='fightMove'></li>");
@@ -614,34 +622,73 @@ var fightButtonEventListener = function () {
 var magicButtonEventListener = function () {
 	magicButton.click(function (){
 		if (magicMoves.length === undefined) {
-		$("#fightMoves").empty();
-		$('.fightMoves').remove();
-		fightMoves.length = undefined;
-		for (i = 0; i < playerCharacter.spells.length; i++) {
-			var newSpell = $("<li class='magicMove'></li>");
-			newSpell.text(playerCharacter.spells[i].name);
-			$("#magicMoves").append(newSpell);
+			$("#fightMoves").empty();
+			$("#itemMoves").empty();
+			$('.fightMoves').remove();
+			$(".itemMoves").remove();
+			fightMoves.length = undefined;
+			itemMoves.length = undefined;
+			for (i = 0; i < playerCharacter.spells.length; i++) {
+				var newSpell = $("<li class='magicMove'></li>");
+				newSpell.text(playerCharacter.spells[i].name);
+				$("#magicMoves").append(newSpell);
+			}
+			magicMoves = $(".magicMove");
+			for (i = 0; i < magicMoves.length; i++) {
+				var newMove = $(magicMoves[i]);
+				newMove.click(function () {
+					var index = $(this).index();
+					currentAttack.name = playerCharacter.spells[index].name;
+					currentAttack.power = playerCharacter.spells[index].power;
+					currentAttack.speed = playerCharacter.spells[index].speed;
+					currentAttack.cost = playerCharacter.spells[index].cost;;
+				})
+			}
 		}
-		magicMoves = $(".magicMove");
-		for (i = 0; i < magicMoves.length; i++) {
-			var newMove = $(magicMoves[i]);
-			newMove.click(function () {
-				var index = $(this).index();
-				currentAttack.name = playerCharacter.spells[index].name;
-				currentAttack.power = playerCharacter.spells[index].power;
-				currentAttack.speed = playerCharacter.spells[index].speed;
-				currentAttack.cost = playerCharacter.spells[index].cost;;
-			})
+	})
+}
+
+var itemButtonEventListener = function () {
+	itemButton.click(function (){
+		if (itemMoves.length === undefined) {
+
+			$("#fightMoves").empty();
+			$("#magicMoves").empty();
+			$('.fightMoves').remove();
+			$("#magicMoves").remove();
+			fightMoves.length = undefined;
+			magicMoves = $("#magicMoves");
+			magicMoves.length = undefined;
+			for (i = 0; i < playerCharacter.inventory.length; i++) {
+					var newItem = $("<li class='itemMove'></li>");
+					newItem.text(playerCharacter.inventory[i].name + ": " + playerCharacter.inventory[i].charges);
+					$("#itemMoves").append(newItem);
+				}
+			itemMoves = $(".itemMove");
+				for (i = 0; i < itemMoves.length; i++) {
+					var newMove = $(itemMoves[i]);
+						newMove.click(function () {
+							var index = $(this).index();
+							var self = this;
+							if (playerCharacter.inventory[index].charges > 0) {
+								var effect = playerCharacter.inventory[index].use();
+								playerCharacter.inventory[index].charges--;
+								newItem.text(playerCharacter.inventory[index].name + ": " + playerCharacter.inventory[index].charges);
+								playerCharacter.actions = playerCharacter.actions - 1;
+								currentActions.text(playerCharacter.actions);
+							} else {
+								newBattleMessage("That item is depleted, sorry!")
+							}
+					})
+			}
 		}
-	
-	}
-	}
-	)
+	})
 }
 
 
 fightButtonEventListener();
 magicButtonEventListener();
+itemButtonEventListener();
 initialChoice0();
 initialChoice1();
 initialChoice2();
