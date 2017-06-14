@@ -33,7 +33,7 @@ p {
 
 #battleDiv {
 	background-image: url("http://68.media.tumblr.com/f37455b2e9a47692bf6f4811424f271d/tumblr_ne4zbgGFlP1tfnou3o1_1280.png");
-	height: 50%;
+	height: 55%;
 	width: 100%;
 	border: 1px solid black;
 	box-sizing: border-box;
@@ -44,7 +44,7 @@ p {
 
 #actionDiv {
 	background-color: black;
-	height: 50%;
+	height: 45%;
 	width: 35%;
 	border-right: 1px solid black;
 	float: left;
@@ -53,7 +53,7 @@ p {
 
 #feedDiv {
 	background-color: black;
-	height: 50%;
+	height: 45%;
 	width: 63%;
 	float: right;
 	display: none;
@@ -129,7 +129,7 @@ p {
 }
 
 #playerImage {
-	width: 30%;
+	width: 70%;
 }
 
 #nextButton {
@@ -140,9 +140,19 @@ p {
 	display: none;
 }
 
+#playerPosition {
+	height: 100%;
+	width: 40%;
+	margin-top: 85px;
+	float: left;
+}
+
+
+
 #position1 {
 	height: 75%;
 	width: 20%;
+	margin-top: 100px;
 	display: inline-block;
 	float: right;
 }
@@ -150,6 +160,7 @@ p {
 #position2 {
 	height: 75%;
 	width: 20%;
+	margin-top: 100px;
 	display: inline-block;
 	float: right;
 }
@@ -157,6 +168,7 @@ p {
 #position3 {
 	height: 75%;
 	width: 20%;
+	margin-top: 100px;
 	display: inline-block;
 	float: right;
 }
@@ -170,8 +182,8 @@ p {
 	background: beige;
 }
 
-progress {
-	height: 20px;
+#playerHealthBar {
+	margin-left: 40px;
 	color: red;
 }
 
@@ -182,10 +194,9 @@ progress {
 }
 
 #reset {
-	margin-left: 335px;
-	margin-top: 115px;
-	background-color: white;
-	color: black;
+	background-color: rgb(137,7,7);
+	color: white;
+	margin-left: 15px;
 }
 
 #nextButton {

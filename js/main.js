@@ -20,7 +20,14 @@ var playerCharacter = {
 					use: function () {
 						playerCharacter.sanity += 5
 					}
-	}],
+				},
+				bandages = {
+					name: "Bandages",
+					charges: 1,
+					use: function () {
+						playerCharacter.health += 5
+					}
+				}],
 	spells: [],
 	actions: 2,
 	choice: 0,
@@ -28,6 +35,8 @@ var playerCharacter = {
 	experience: 0,
 	chapter: 1
 };
+
+var car = "undamaged";
 
 var currentEnemyArray = [];
 var enemyCounter = 0;
@@ -137,7 +146,6 @@ function Enemy(name,hp,dmg,exp,img){
 			if (numEnemies <= 0) {
 				newBattleMessage("You successfully defeated all the enemies!")
 				$("#nextButton").fadeIn();
-				playerCharacter.choice = 9;
 				addEventListeners();
 				enemyCounter = 0;
 			} 	
@@ -186,16 +194,16 @@ var nextButton = $("#next");
 
 
 var gameOver = function () {
-	battleDiv.fadeOut();
-	feedDiv.fadeOut();
-	actionDiv.fadeOut();
-	narrativeBox.fadeIn();
-	choiceBox.fadeIn();
-	choiceText1.text("");
+	battleDiv.hide();
+	feedDiv.hide();
+	actionDiv.hide();
+	narrativeBox.show();;
+	choiceBox.show();
 	choiceText2.text("");
 	choiceText1.empty();
+	choiceText1.text("Ready to try again?")
 	choiceText2.empty();
-    choiceBox.append("<button id='reset'>Reset</button>")
+    choiceText1.append("<button id='reset'>Reset</button>")
     var resetButton = $("#reset");
     $(".choiceButton").remove();
     console.log("game over is running");
@@ -290,6 +298,7 @@ var initialChoice2 = function () {
 	choiceArray[2].click(function() {
 	updateNarrative("Really? You're going straight out your window? Jeez man, you're nuts. But I admire the dedication. You roll out of bed, stretch your legs for a second, open your window, and then leap outside. You hit the ground hard and the wind is knocked out of you. As you roll over and try to regain your composure you see a hooded figure on your porch gesturing towards you and shouting towards someone inside. What do you do?");
 	choiceItems.fadeOut();
+	playerCharacter.health -= 3;
 	choiceText1.text("They should be scared of you. You just jumped out a window. Press the attack!");
 	choiceText2.text("You didn't jump out of a window to get into more trouble. You're out of here");
 	choiceText3.text("");
@@ -338,14 +347,18 @@ var addEventListeners = function () {
 		})
 		choiceArray[3].click(function() {
 			updateNarrative("This is getting ridiculous. They've woken you up, they're in your house, and somehow they stole your DOOR. You stride down into the hallway, the chanting getting louder as you approach the kitchen. You round the corner and see a trio of hooded cultists doing god knows what near your island. Their eyes register a moment of surprise before they lunge towards you");
-			//need to code you entering battle mode here
-			initiateBattle(numCultists);
+				playerCharacter.choice = 9;
+				addEventListeners();
+				initiateBattle(numCultists, "Cultist", 7,2,5, "imgs/pixelCultist.gif");
+
 		})
 	}
 	else if (playerCharacter.choice === 3) {
 		choiceArray[3].click(function() {
 			updateNarrative("You're a mad man! You charge at the hooded figure.")
-			initiateBattle(numCultists);
+				playerCharacter.choice = 9;
+				addEventListeners();
+			initiateBattle(numCultists, "Cultist", 7,2,5, "imgs/pixelCultist.gif");
 		})
 		choiceArray[4].click(function() {
 			updateNarrative("You sprint away from your house. Behind you there's shouting as the intruders begin to give chase. You have a choice, try to lose them in the woods or run towards town?");
@@ -385,7 +398,9 @@ var addEventListeners = function () {
 			updateNarrative("You creep up behind the hooded figure. You wouldn't normally consider yourself a morning person, and usually wouldn't dream of sneaking up behind a cultist and knocking him out before you've had your coffee, but adrenaline and rage can accomplish some incredible things. You put him in the rear naked choke and the sucker is passed out in no time. Unfortunately, as you're lowering him to the floor one of his friends turns around, spots you, and charges you.");
 			numCultists--;
 			playerCharacter.experience += 5;
-			initiateBattle(numCultists);
+			playerCharacter.choice = 9;
+			addEventListeners();
+			initiateBattle(numCultists, "Cultist", 7,2,5, "imgs/pixelCultist.gif");
 			//add a battle button
 		})
 		choiceArray[6].click(function() {
@@ -406,7 +421,10 @@ var addEventListeners = function () {
 			choiceArray[6][0].remove();
 			choiceText1.append(choiceArray[3][0]);
 				choiceArray[3].click(function() {
-					initiateBattle(3)
+					playerCharacter.choice = 9;
+					addEventListeners();
+					initiateBattle(numCultists, "Cultist", 7,2,5, "imgs/pixelCultist.gif");
+
 				})
 			choiceText2.append(choiceArray[7][0]);
 			choiceText.fadeIn();
@@ -456,8 +474,8 @@ var addEventListeners = function () {
 		updateNarrative("You throw the last intruder over the countertop of your kitchen, scattering pots everywhere. He raises his hand to ward off your final blow but it connects and sends him slumping to the ground. Adrenaline is pumping through veins. Curious to know more about what bought these strangers into your house, you lean down and search his robes. Inside you find two unusual items - an ancient leather bound book as well as a heavy iron key. The book carries an aura of heavy malice. You need to get out of here and report what happened in town - but the book may help you gain more information. Do you open it?");
 		choiceText1.text("Open the book");
 		choiceText2.text("You've had enough weirdness. The book can wait, head into town.")
-		var openBookButton = $("<button id='openBook'>Choose</button>")
-		var goToTown = $("<button id='townButton'>Choose</button>")
+		var openBookButton = $("<button id='openBook' class='choiceButton'>Choose</button>")
+		var goToTown = $("<button id='townButton' class='choiceButton'>Choose</button>")
 		choiceText1.append(openBookButton);
 		openBookButton.click(function() {
 			updateNarrative("The alien script seems to crawl as you run your eyes over it. For a split second you feel a presence occupying your mind, and have insight into a place on the other side of the world. It is a cold and dead place where the sun never touches. Creatures of darkness call it their home - celebrating cruelty and survival above all else. Spiteful as they may be - they are advanced, and travel the universe making other creatures their playthings. Humans are one of their favorite targets. You snap back into reality with a traumatic new experience, but also with the ability to leverage some of the cosmic power that these beings would use against you. (You've gained the spell 'Shrivel!' Using it will reduce your sanity, but help you win difficult fights in a pinch)")
@@ -479,7 +497,7 @@ var addEventListeners = function () {
 			updateNarrative("You're not sure what the cult is doing on your property, but if anymore of them show up you're going to be in serious trouble. You head into town to see if you can learn more.");
 			choiceText1.text("Proceed to the next chapter");
 			goToTown.remove();
-			var nextChapter = $("<button id='chapter2Button'>Choose</button>");
+			var nextChapter = $("<button id='chapter2Button' class='choiceButton'>Choose</button>");
 			choiceText1.append(nextChapter);
 			choiceText2.text("");
 				nextChapter.click (function () {
@@ -491,9 +509,58 @@ var addEventListeners = function () {
 	}
 }
 
+var clearChoiceBox = function() {
+	choiceText1.empty();
+	choiceText2.empty();
+}
+
 chapter2UpdateChoices = function() {
 	if (playerCharacter.choice === 0) {
-		updateNarrative("Sorry, that's currently all there is in the game. More to come!");
+		updateNarrative("You run out to you car and hop behind the wheel, itching to put this nightmare behind you. You peel out onto the country road and begin to accelerate. You're finally starting to calm down when, in a flash, something white darts into the road. What do you do?");
+		choiceText1.text("Accelerate.")
+		var accelerateButton = $("<button id='accelerate' class='choiceButton'>Choose</button>")
+		choiceText1.append(accelerateButton);
+			accelerateButton.click(function () {
+				playerCharacter.choice = 1;
+				car = "damaged";
+				chapter2UpdateChoices();
+			})
+		choiceText2.text("Swerve to avoid it!")
+		var swerveButton = $("<button id='accelerate' class='choiceButton'>Choose</button>");
+		choiceText2.append(swerveButton);
+		swerveButton.click(function() {
+			playerCharacter.choice = 2;
+			chapter2UpdateChoices();
+		})
+	} else if (playerCharacter.choice === 1) {
+		updateNarrative("You step on the gas and plow into some kind of monster. You only catch a glimpse of it before it's dragged under your car, but it's massive claws rend several marks down the hood of your car before it is slammed into the road and kicked out somewhere behind you. Your car is damaged, but functional, and you can continue on.")
+
+	} else if (playerCharacter.choice === 2) {
+		var crash = Math.random();
+		console.log(crash);
+			if (crash > .5) {
+				clearChoiceBox();
+				updateNarrative("You swerve around whatever it was blocking your path and frantically work to regain control of the vehicle. After a breathless moment you find yourself crusing back along the road - car and body intact.")
+				choiceText1.text("Whew. Keep driving!")
+				var keepDriving = $("<button id='keepDriving' class='choiceButton'>Choose</button>");
+				choiceText1.append(keepDriving);
+				keepDriving.click(function() {
+					player2UpdateChoices();
+				})
+				playerCharacter.choice = 4
+			} else {
+				clearChoiceBox();
+				updateNarrative("You jerk your steering wheel to the side and run directly into a tree. Miraculously, you're basically unharmed. You turn your head and see the creature from the middle of the road scrambling towards you. It's humanoid but malformed - its ivory skin shines in the moonlight and its monstrous mouth voraciously flaps open and shut. Despite it's lightning fast movement it has no legs, and uses its arms to dart towards you. You have no choice but to fight.");
+				choiceText1.text("Time to fight");
+				choiceText2.empty();
+				var fightGhoul = $("<button id='fightGhoul' class='choiceButton'>Choose</button>");
+				choiceText1.append(fightGhoul);
+				fightGhoul.click(function() {
+					initiateBattle(1, "Ghoul", 15,3,10, "imgs/ghoul.gif");
+					playerCharacter.choice = 5;
+					chapter2UpdateChoices();
+				})
+			}
 	}
 };
 
@@ -511,12 +578,16 @@ var run;
 
 var turn = 1;
 
+var newChapter2Button = function (id, choiceText) {
+	var newButton = $("<button id='" + id + "' class='choiceButton'>Choose</button>");
+	newButton.appendTo(choiceText);
+}
 
 
 
 //use the 'arguments.' object similarly to this to pass multiple enemies to this function
 //This function changes the gameboard to the battle arrangement and creates the buttons you use to fight
-var initiateBattle = function (numEnemies) {
+var initiateBattle = function (numEnemies, enemyName, enemyHealth, enemyStrength,enemyXP, enemyImg) {
 	narrativeBox.hide();
 	choiceBox.hide();
 	battleDiv = $("#battleDiv");
@@ -527,8 +598,11 @@ var initiateBattle = function (numEnemies) {
 	battleDiv.fadeIn();
 	actionDiv.fadeIn();
 	feedDiv.fadeIn();
+	$("#playerPosition").append("<img id='playerImage' src='imgs/PixelDetective.gif'/>");
+	$("#playerPosition").append("<div id='playerHealthSection'><progress id='playerHealthBar' value='' max='10'><span id='playerHealthValue'></span></progress></div>")
+	$("#playerHealthBar").attr("value", playerCharacter.health);
 	for (i = 0; i < numEnemies; i++) {
-		var newEnemy = new Enemy("Cultist",7,2,5,"imgs/pixelCultist.gif");
+		var newEnemy = new Enemy(enemyName,enemyHealth,enemyStrength,enemyXP, enemyImg);
 		currentEnemyArray.push(newEnemy);
 		newEnemy.spawn();
 	}
@@ -548,6 +622,8 @@ var initiateBattle = function (numEnemies) {
 // }
 
 var endBattle = function () {
+	$("#playerPosition").empty();
+	$("#theFeed").empty();
 	battleDiv.fadeOut();
 	actionDiv.fadeOut();
 	feedDiv.fadeOut();
@@ -555,8 +631,10 @@ var endBattle = function () {
 	choiceBox.fadeIn();
 }
 
-nextButton.on("click", function() {
+nextButton.on("click", function(choiceNum) {
 	endBattle();
+	playerCharacter.choice = choiceNum;
+	addEventListeners()
 	nextButton.fadeOut();
 })
 
@@ -676,6 +754,8 @@ var itemButtonEventListener = function () {
 								newItem.text(playerCharacter.inventory[index].name + ": " + playerCharacter.inventory[index].charges);
 								playerCharacter.actions = playerCharacter.actions - 1;
 								currentActions.text(playerCharacter.actions);
+								$("#playerHealthBar").attr("value", playerCharacter.health);
+
 							} else {
 								newBattleMessage("That item is depleted, sorry!")
 							}
