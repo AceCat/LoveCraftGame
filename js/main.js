@@ -533,7 +533,15 @@ chapter2UpdateChoices = function() {
 			chapter2UpdateChoices();
 		})
 	} else if (playerCharacter.choice === 1) {
+		clearChoiceBox();
 		updateNarrative("You step on the gas and plow into some kind of monster. You only catch a glimpse of it before it's dragged under your car, but it's massive claws rend several marks down the hood of your car before it is slammed into the road and kicked out somewhere behind you. Your car is damaged, but functional, and you can continue on.")
+		choiceText1.text("Head into town")
+		playerCharacter.choice = 3
+		var keepDriving = $("<button id='keepDriving' class='choiceButton'>Choose</button>");
+				choiceText1.append(keepDriving);
+				keepDriving.click(function() {
+					chapter2UpdateChoices();
+				})
 
 	} else if (playerCharacter.choice === 2) {
 		var crash = Math.random();
@@ -542,12 +550,13 @@ chapter2UpdateChoices = function() {
 				clearChoiceBox();
 				updateNarrative("You swerve around whatever it was blocking your path and frantically work to regain control of the vehicle. After a breathless moment you find yourself crusing back along the road - car and body intact.")
 				choiceText1.text("Whew. Keep driving!")
+				playerCharacter.choice = 3
 				var keepDriving = $("<button id='keepDriving' class='choiceButton'>Choose</button>");
 				choiceText1.append(keepDriving);
 				keepDriving.click(function() {
-					player2UpdateChoices();
+					chapter2UpdateChoices();
 				})
-				playerCharacter.choice = 4
+
 			} else {
 				clearChoiceBox();
 				updateNarrative("You jerk your steering wheel to the side and run directly into a tree. Miraculously, you're basically unharmed. You turn your head and see the creature from the middle of the road scrambling towards you. It's humanoid but malformed - its ivory skin shines in the moonlight and its monstrous mouth voraciously flaps open and shut. Despite it's lightning fast movement it has no legs, and uses its arms to dart towards you. You have no choice but to fight.");
@@ -557,10 +566,45 @@ chapter2UpdateChoices = function() {
 				choiceText1.append(fightGhoul);
 				fightGhoul.click(function() {
 					initiateBattle(1, "Ghoul", 15,3,10, "imgs/ghoul.gif");
-					playerCharacter.choice = 5;
+					playerCharacter.choice = 4;
 					chapter2UpdateChoices();
 				})
 			}
+	} else if (playerCharacter.choice === 3) {
+		clearChoiceBox();
+		updateNarrative("It hasn't been easy but you crest a hill and are greeted by the comforting lights of civilization. You expect the feeling of spine tingling dread to abate, but feel no sense of relief. Whatever is happening to you is real - you and everyone in town might be threatened. Where do you want to go?")
+		choiceText1.text("Head to the police station, the authorities need to know.")
+		choiceText2.text("Someone has to know what this book means, head over to the 'Linguistics' department of the local university")
+		choiceText3.text("You're banged up, you need some medical attention before considering anything else.")
+		var policeStation = ("<button id='policeStation' class='choiceButton'>Choose</button>")
+		var university = ("<button id='university' class='choiceButton'>Choose</button>")
+		var hospital = ("<button id='hospital' class='choiceButton'>Choose</button>")
+		choiceText1.append(policeStation);
+		choiceText2.append(university);
+		choiceText3.append(hospital);
+		//event listeners for the choices go here
+		$("#policeStation").click(function() {
+			playerCharacter.choice = 5;
+			chapter2UpdateChoices();
+		})
+		$("#university").click(function() {
+			playerCharacter.choice = 6;
+			chapter2UpdateChoices();
+		})
+		$("#hospital").click(function() {
+			playerCharacter.choice = 7;
+			chapter2UpdateChoices();
+		})
+
+	} else if (playerCharacter.choice === 4) {
+		updateNarrative("You stand over the creatures body, hard to believe you're alive. At least you have physical proof that the horrible events aren't only in your head. Nothing to do now but continue on towards town - and hopefully safety.")
+		playerCharacter.choice = 3;
+		choiceText1.text("Onwards to town!")
+		var keepDriving = $("<button id='keepDriving' class='choiceButton'>Choose</button>");
+				choiceText1.append(keepDriving);
+				keepDriving.click(function() {
+				chapter2UpdateChoices();
+		})
 	}
 };
 
