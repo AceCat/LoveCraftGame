@@ -13,24 +13,14 @@ var playerCharacter = {
 				power: 5,
 				speed: 2,
 				cost: 0
-			},
-			flail = {
-				name: "flail",
-				power: 7,
-				speed: 3,
-				cost: 0
 			}],
 	inventory: [],
-	spells: [shrivel = {
-				name: "shrivel",
-				power: 10,
-				speed: 3,
-				cost: 5
-			}],
+	spells: [],
 	actions: 2,
 	choice: 0,
 	alive: true,
-	experience: 0
+	experience: 0,
+	chapter: 1
 };
 
 var currentEnemyArray = [];
@@ -41,6 +31,7 @@ var numCultists = 3;
 
 //Here are the variables that determine what turn it is
 var turn = 1;
+var currentActions = $("#currentActions");
 
 var turnSwitch = setInterval(function(){
 	if (playerCharacter.actions > 0) {
@@ -52,6 +43,7 @@ var turnSwitch = setInterval(function(){
 		}
 	turn = 1;
 	playerCharacter.actions = 2;
+	currentActions.text(playerCharacter.actions);
 	}
 
 
@@ -89,6 +81,7 @@ function Enemy(name,hp,dmg,exp,img){
 		playerCharacter.health = (playerCharacter.health - this.strength);
 		newBattleMessage(this.name + " hit you for " + this.strength + " damage")
 		$("#playerHealthBar").attr("value", playerCharacter.health);
+		$("#playerHealthValue").text(playerCharacter.health);
 	};
 
   this.spawn = function() {
@@ -112,6 +105,7 @@ function Enemy(name,hp,dmg,exp,img){
 			playerCharacter.actions = (playerCharacter.actions - currentAttack.speed);
 			newBattleMessage("You hit " + self.name + " with " + currentAttack.name + " for " + currentAttack.power + " damage.")
 			enemyHealthBar.attr("value", self.health);
+			currentActions.text(playerCharacter.actions)
 		} else if (playerCharacter.actions < currentAttack.speed && playerCharacter.actions > 0) {
 			var newFeedItem = $("<li></li>")
 			newFeedItem.text("You don't have enough actions to make that attack, pick another.")
@@ -191,18 +185,22 @@ var gameOver = function () {
 	actionDiv.fadeOut();
 	narrativeBox.fadeIn();
 	choiceBox.fadeIn();
+	choiceText1.text("");
+	choiceText2.text("");
+	choiceText1.empty();
+	choiceText2.empty();
     choiceBox.append("<button id='reset'>Reset</button>")
     var resetButton = $("#reset");
     $(".choiceButton").remove();
     console.log("game over is running");
 
     resetButton[0].addEventListener("click", function () {
-    	playerCharacter.health = 10;
-    	playerCharacter.sanity = 15;
-    	playerCharacter.strength = 5;
+    	currentEnemyArray = [];
+    	playerCharacter.actions = 2;
     	playerCharacter.choice = 0;
-    	playerCharacter.alive = true;
-    	choiceArray = $([choiceButton1, choiceButton2, choiceButton3])
+    	enemyCounter = 0;
+    	numEnemies = 0;
+    	$("#theFeed").empty();
     	narrativeText.text("You wake up from a strange dream, feverish and sweating. The details immediately slip away from you and the only thing you can remember is a dull chant in a language you've never heard. Your head is still pounding to its rhythm. You look up from bed and realize that, against all logic, the door has disappeared from your bedroom. What do you do?");
     	choiceText1.text("Go back to sleep");
     	choiceText2.text("Search the room");
@@ -210,8 +208,31 @@ var gameOver = function () {
     	choiceText1.append(choiceButton1[0]);
     	choiceText2.append(choiceButton2[0]);
     	choiceText3.append(choiceButton3[0]);
+    	$("#position1").empty();
+    	$("#position2").empty();
+    	$("#position3").empty();
     	choiceItems.fadeIn();
     	resetButton.remove();
+    	addEventListeners();
+    	playerCharacter.health = 10;
+    	playerCharacter.sanity = 15;
+    	playerCharacter.strength = 5;
+    	playerCharacter.alive = true;
+    	$("#playerHealthBar").attr("value", playerCharacter.health);
+    	initialChoice0();
+    	initialChoice1();
+    	initialChoice2();
+    	var uDead = setInterval(function() {
+			if (playerCharacter.health <= 0) {
+			updateNarrative("You have died. Sorry!")
+			newBattleMessage("You have been killed.")
+			playerCharacter.actions = 0;
+			gameOver();
+			clearInterval(uDead);
+
+	}
+
+}, 100)
 	})
 }
 
@@ -219,9 +240,6 @@ var gameOver = function () {
 
 var updateNarrative = function(newText) {
 	narrativeText.text(newText)
-};
-
-var updateChoices = function (newChoices) {
 };
 
 
@@ -233,14 +251,15 @@ var createNewButton = function (choiceNum) {
 	choiceArray.push(newButton);
 };
 
-var openDoorChoicesText = ["continue down the hallway", "go back inside", "sit down"];
-
-choiceArray[0].click(function () {
+var initialChoice0 = function () {
+	choiceArray[0].click(function () {
 	updateNarrative("Doors don't just disappear, and even if they did you have nowhere to go. You roll over in your bed and try to go back to sleep, hoping it will help combat your pounding headache. As you slip into sleep you're senses are assualted, rapidfire, with a torrent of unspeakable images. Grotesque and malformed creatures whose very bodies shift and rearrange themselves as you look upon them. You're jolted back awake with a further reduced grasp on reality. The door is still gone.")
 	playerCharacter.sanity = playerCharacter.sanity - 5;
-})
+	})
+};
 
-choiceArray[1].click(function() {
+var initialChoice1 = function () {
+	choiceArray[1].click(function() {
 	updateNarrative("You push yourself out of bed and begin to pace through your bedroom. You switch on your bedside light, but it does little to illuminate the oppressive darkness. In the context of your dream even this familiar place feels strange and sinister. You run your hand over where the door used to be and only feel soft wood. You take a step back and find your feet sinking into the ground. You look down - a rug that has never been in your room has appeared. It's adorned with unfamiliar symbols. The pounding in your head reaches an intense crescendo and you find yourself dumped into a hallway on the first floor. From your kitchen you hear voices - they're chanting the same otherwordly litany from your dream! What do you do?");
 	playerCharacter.location = "hallway"
 	choiceItems.fadeOut();
@@ -258,9 +277,11 @@ choiceArray[1].click(function() {
 	choiceArray[4].fadeIn();
 	playerCharacter.choice = 1;
 	addEventListeners();
-});
+	})
+};
 
-choiceArray[2].click(function() {
+var initialChoice2 = function () {
+	choiceArray[2].click(function() {
 	updateNarrative("Really? You're going straight out your window? Jeez man, you're nuts. But I admire the dedication. You roll out of bed, stretch your legs for a second, open your window, and then leap outside. You hit the ground hard and the wind is knocked out of you. As you roll over and try to regain your composure you see a hooded figure on your porch gesturing towards you and shouting towards someone inside. What do you do?");
 	choiceItems.fadeOut();
 	choiceText1.text("They should be scared of you. You just jumped out a window. Press the attack!");
@@ -277,11 +298,21 @@ choiceArray[2].click(function() {
 	choiceArray[4].fadeIn();
 	playerCharacter.choice = 3;
 	addEventListeners();
-})
+	})
+};
 
 
 var addEventListeners = function () {
-	if (playerCharacter.choice === 1) {
+	if (playerCharacter.choice === 0) {
+		updateNarrative("You wake up from a strange dream, feverish and sweating. The details immediately slip away from you and the only thing you can remember is a dull chant in a language you've never heard. Your head is still pounding to its rhythm. You look up from bed and realize that, against all logic, the door has disappeared from your bedroom. What do you do?");
+		choiceText1.text("Go back to sleep");
+		choiceText2.text("Search the room");
+		choiceText3.text("Jump out the window");
+		choiceText1.append(choiceArray[0]);
+		choiceText2.append(choiceArray[1]);
+		choiceText3.append(choiceArray[2]);
+	}
+	else if (playerCharacter.choice === 1) {
 		choiceArray[4][0].addEventListener("click", function() {
 			updateNarrative("You begin to sneak down the hallway, your untrained feet bring squeals from the old floorboards but the monotonous chanting drowns out the sound. As you approach the kitchen you see a hooded figure with his back turned towards you. You think you might be able to sneak up behind him and knock him out before he knows what's happening - alternatively, you keep a baseball bat by your backdoor, you could sneak over and grab it.");
 			choiceItems.fadeOut();
@@ -416,9 +447,48 @@ var addEventListeners = function () {
 		})
 	}
 	else if (playerCharacter.choice === 9) {
-		updateNarrative("You stand victorious, the intruders beat to a pulp. Your house is safe for now - but you're left with so many questions. Who are these people? Why did they come to your house? Where is your door at?")
+		updateNarrative("You throw the last intruder over the countertop of your kitchen, scattering pots everywhere. He raises his hand to ward off your final blow but it connects and sends him slumping to the ground. Adrenaline is pumping through veins. Curious to know more about what bought these strangers into your house, you lean down and search his robes. Inside you find two unusual items - an ancient leather bound book as well as a heavy iron key. The book carries an aura of heavy malice. You need to get out of here and report what happened in town - but the book may help you gain more information. Do you open it?");
+		choiceText1.text("Open the book");
+		choiceText2.text("You've had enough weirdness. The book can wait, head into town.")
+		var openBookButton = $("<button id='openBook'>Choose</button>")
+		var goToTown = $("<button id='townButton'>Choose</button>")
+		choiceText1.append(openBookButton);
+		openBookButton.click(function() {
+			updateNarrative("The alien script seems to crawl as you run your eyes over it. For a split second you feel a presence occupying your mind, and have insight into a place on the other side of the world. It is a cold and dead place where the sun never touches. Creatures of darkness call it their home - celebrating cruelty and survival above all else. Spiteful as they may be - they are advanced, and travel the universe making other creatures their playthings. Humans are one of their favorite targets. You snap back into reality with a traumatic new experience, but also with the ability to leverage some of the cosmic power that these beings would use against you. (You've gained the spell 'Shrivel!' Using it will reduce your sanity, but help you win difficult fights in a pinch)")
+			var shrivel = {
+				name: "shrivel",
+				power: 10,
+				speed: 2,
+				cost: 5
+			};
+			playerCharacter.spells.push(shrivel);
+			openBookButton.remove();
+			choiceText1.text("You're ready, head into town.")
+			choiceText1.append(goToTown);
+			choiceText2.text("");
+		});
+		choiceText2.append(goToTown);
+		goToTown.click(function() {
+			updateNarrative("You're not sure what the cult is doing on your property, but if anymore of them show up you're going to be in serious trouble. You head into town to see if you can learn more.");
+			choiceText1.text("Proceed to the next chapter");
+			goToTown.remove();
+			var nextChapter = $("<button id='chapter2Button'>Choose</button>");
+			choiceText1.append(nextChapter);
+			choiceText2.text("");
+				nextChapter.click (function () {
+					playerCharacter.chapter = 2;
+					playerCharacter.choice = 0;
+					chapter2UpdateChoices();
+				})
+	})
 	}
 }
+
+chapter2UpdateChoices = function() {
+	if (playerCharacter.choice === 0) {
+		updateNarrative("Sorry, that's currently all there is in the game. More to come!");
+	}
+};
 
 //programming for the battle component of the game starts here
 var battleDiv = $("#battleDiv");
@@ -445,6 +515,8 @@ var initiateBattle = function (numEnemies) {
 	battleDiv = $("#battleDiv");
 	actionDiv = $("#actionDiv");
 	feedDiv = $("#feedDiv");
+	playerCharacter.actions = 2;
+	currentActions.text(playerCharacter.actions);
 	battleDiv.fadeIn();
 	actionDiv.fadeIn();
 	feedDiv.fadeIn();
@@ -507,6 +579,19 @@ var fightButtonEventListener = function () {
 				var newMove = $("<li class='fightMove'></li>");
 				newMove.text(playerCharacter.fight[i].name);
 				$("#fightMoves")[0].append(newMove[0]);
+				newMove.mouseenter(function () {
+					var index = $(this).index();
+					var newMovePower = playerCharacter.fight[index].power;
+					var newMoveSpeed = playerCharacter.fight[index].speed;
+					var newMoveCost = playerCharacter.fight[index].cost;
+					var displayBox = $("<div id='displayBox'></div>")
+					displayBox.text("Power: " + newMovePower + " Speed: " + newMoveSpeed + " Cost: " + newMoveCost);
+					actionDiv.append(displayBox);
+					displayBox.attr("background-color", "white");
+				});
+				newMove.mouseout(function () {
+					$("#displayBox").remove();
+				})
 			}
 			fightMoves = $(".fightMove");
 			for (i = 0; i < fightMoves.length; i++) {
@@ -556,3 +641,6 @@ var magicButtonEventListener = function () {
 
 fightButtonEventListener();
 magicButtonEventListener();
+initialChoice0();
+initialChoice1();
+initialChoice2();

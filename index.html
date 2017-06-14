@@ -21,7 +21,7 @@
 			<div id="position3">
 			</div>
 			<div id="playerHealthSection">
-				<progress id="playerHealthBar" value="10" max="10"></progress>
+				<progress id="playerHealthBar" value="10" max="10"><span id="playerHealthValue"></span></progress>
 			</div>
 		</div>
 
@@ -33,21 +33,21 @@
 		</div>
 
 		<div id="actionDiv">
+			<p>Current Actions: <span id="currentActions"></span></p>
 			<div id="buttonDiv">
-			<button class='battleButton' id='fightButton'>Fight</button>
-			<br />
-			<button class='battleButton' id='magicButton'>Magic</button>
-			<br />
-			<button class='battleButton' id='specialButton'>Special</button>
-			<br />
-			<button class='battleButton' id='runButton'>Run</button>
+				<button class='battleButton' id='fightButton'>Fight</button>
+				<br />
+				<button class='battleButton' id='magicButton'>Magic</button>
+				<br />
+				<button class='battleButton' id='runButton'>Run</button>
 			</div>
+			<div class="moveLists">
 				<ul class="moveList" id="fightMoves">
 				</ul>
 				<ul class="moveList" id="magicMoves">
 				</ul>
-				<ul class="moveList" id="specialMoves">
-				</ul>
+			</div>
+
 		</div>
 
 		<div id="feedDiv">
