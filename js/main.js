@@ -57,6 +57,12 @@ var uDead = setInterval(function() {
 		gameOver();
 		clearInterval(uDead);
 
+	} else if (playerCharacter.sanity <= 0) {
+		updateNarrative("You have gone totally, irrevocably bonkers")
+		playerCharacter.actions = 0;
+		gameOver();
+		choiceText3.fadeOut();
+		clearInterval(uDead);
 	}
 
 }, 100)
@@ -107,16 +113,12 @@ function Enemy(name,hp,dmg,exp,img){
 			enemyHealthBar.attr("value", self.health);
 			currentActions.text(playerCharacter.actions)
 		} else if (playerCharacter.actions < currentAttack.speed && playerCharacter.actions > 0) {
-			var newFeedItem = $("<li></li>")
-			newFeedItem.text("You don't have enough actions to make that attack, pick another.")
-			$("#theFeed").append(newFeedItem);
+			newBattleMessage("You don't have enough actions to make that attack, pick another.")
 		} else {
 			turn = 0;
 		}
 			if (self.health <= 0) {
-				var newFeedItem = $("<li></li>")
-				newFeedItem.text(self.name + " has been killed.")
-				$("#theFeed").append(newFeedItem);
+				newBattleMessage(self.name + " has been killed.")
 				playerCharacter.experience = (playerCharacter.experience + self.xp)
 				delete self.id;
 				currentEnemyArray.splice(self.index, 1);
@@ -127,9 +129,7 @@ function Enemy(name,hp,dmg,exp,img){
 				enemyHealthBar.remove();
 			}
 			if (numEnemies <= 0) {
-				var newFeedItem = $("<li></li>")
-				newFeedItem.text("You successfully defeated all the enemies!")
-				$("#theFeed").append(newFeedItem);
+				newBattleMessage("You successfully defeated all the enemies!")
 				$("#nextButton").fadeIn();
 				playerCharacter.choice = 9;
 				addEventListeners();
@@ -253,7 +253,7 @@ var createNewButton = function (choiceNum) {
 
 var initialChoice0 = function () {
 	choiceArray[0].click(function () {
-	updateNarrative("Doors don't just disappear, and even if they did you have nowhere to go. You roll over in your bed and try to go back to sleep, hoping it will help combat your pounding headache. As you slip into sleep you're senses are assualted, rapidfire, with a torrent of unspeakable images. Grotesque and malformed creatures whose very bodies shift and rearrange themselves as you look upon them. You're jolted back awake with a further reduced grasp on reality. The door is still gone.")
+	updateNarrative("Doors don't just disappear, and even if they did you have nowhere to go. You roll over in your bed and try to go back to sleep, hoping it will help combat your pounding headache. As you slip into sleep your senses are assualted, rapidfire, with a torrent of unspeakable images. Grotesque and malformed creatures whose very bodies shift and rearrange themselves as you look upon them. You're jolted back awake with a further reduced on reality. The door is still gone.")
 	playerCharacter.sanity = playerCharacter.sanity - 5;
 	})
 };
@@ -462,6 +462,7 @@ var addEventListeners = function () {
 				cost: 5
 			};
 			playerCharacter.spells.push(shrivel);
+			playerCharacter.sanity -= 5;
 			openBookButton.remove();
 			choiceText1.text("You're ready, head into town.")
 			choiceText1.append(goToTown);

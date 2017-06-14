@@ -159,3 +159,23 @@ progress {
 	height: 20px;
 	color: red;
 }
+
+.choiceButton {
+	margin-left: 20px;
+	background-color: rgb(137,7,7);
+	color: white;
+}
+
+#reset {
+	margin-left: 335px;
+	margin-top: 115px;
+	background-color: white;
+	color: black;
+}
+
+#nextButton {
+	background-color: rgb(137,7,7);
+	color: white;
+	margin-right: 30px;
+
+}
