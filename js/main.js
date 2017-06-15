@@ -1,9 +1,10 @@
 var playerCharacter = {
 	health: 10,
-	sanity: 15,
+	sanity: 25,
 	strength: 5,
 	deputy: 0,
 	doctor: 0,
+	professor: 0,
 	fight: [punch = {
 				name: "punch",
 				power: 3,
@@ -38,6 +39,8 @@ var playerCharacter = {
 	chapter: 1,
 	museum: "discovered"
 };
+
+
 
 var car = "undamaged";
 
@@ -283,8 +286,8 @@ var addEventListeners = function () {
 			updateNarrative("You sneak away from the figures in your kitchen. Your progress is agonizing as you expect one of them to shout in discovery at any moment, but whether through guile our luck you make your way to the back door and grab the baseball bat. Nice work! Now what are you going to do with it?");
 			var Bat = {
 				name: "Baseball Bat",
-				power: 4,
-				speed: 1,
+				power: 7,
+				speed: 2,
 				cost: 0
 			};
 			playerCharacter.fight.push(Bat);
@@ -355,12 +358,15 @@ var addEventListeners = function () {
 		choiceText1.append(openBookButton);
 		openBookButton.click(function() {
 			updateNarrative("The alien script seems to crawl as you run your eyes over it. For a split second you feel a presence occupying your mind, and have insight into a place on the other side of the world. It is a cold and dead place where the sun never touches. Creatures of darkness call it their home - celebrating cruelty and survival above all else. Spiteful as they may be - they are advanced, and travel the universe making other creatures their playthings. Humans are one of their favorite targets. You snap back into reality with a traumatic new experience, but also with the ability to leverage some of the cosmic power that these beings would use against you. (You've gained the spell 'Shrivel!' Using it will reduce your sanity, but help you win difficult fights in a pinch)")
-			var shrivel = {
-				name: "shrivel",
-				power: 10,
-				speed: 2,
-				cost: 5
-			};
+		var shrivel = {
+					name: "Shrivel",
+					use: function () {
+					currentAttack.name = "Shrivel";
+					currentAttack.power = 10;
+					currentAttack.speed = 1;
+					currentAttack.cost = 5;
+					}
+				}
 			playerCharacter.spells.push(shrivel);
 			playerCharacter.sanity -= 5;
 			openBookButton.remove();
@@ -574,6 +580,16 @@ var policeStationUpdateChoices = function() {
 			playerCharacter.choice = 0;
 			universityUpdateChoices();
 		})
+		if (playerCharacter.museum === "discovered") {
+			choiceText3.text("Museum");
+			var museum = $("<button id='museum' class='choiceButton'>Choose</button>")
+			choiceText3.append(museum);
+			museum.click(function() {
+				playerCharacter.choice = 0;
+				museumUpdateChoices();
+			})
+
+		}
 
 	} else if (playerCharacter.choice === 4) {
 		clearChoiceBox();
@@ -721,7 +737,16 @@ var hospitalUpdateChoices = function () {
 			playerCharacter.choice = 0;
 			universityUpdateChoices();
 		})
+		if (playerCharacter.museum === "discovered") {
+			choiceText3.text("Museum");
+				var museum = $("<button id='museum' class='choiceButton'>Choose</button>")
+			choiceText3.append(museum);
+			museum.click(function() {
+				playerCharacter.choice = 0;
+				museumUpdateChoices();
+			})
 
+		}
 	} else if (playerCharacter.choice === 4) {
 		clearChoiceBox();
 		updateNarrative("You rush down the hallway and careen around the corner. You see a Doctor using a stool to try and keep two ghouls at bay. Her eyes widen in surprise at seeing you, drawing the creatures attention to you. They immediately shift their focus off of her and close on you!");
@@ -764,7 +789,7 @@ var universityUpdateChoices = function () {
 		var headInside = $("<button id='headInside' class='choiceButton'>Choose</button>");
 		var leave = $("<button id='leave' class='choiceButton'>Choose</button>");
 		choiceText1.append(headInside);
-		choiceText.append(leave);
+		choiceText2.append(leave);
 		headInside.click(function () {
 			playerCharacter.choice = 1;
 			universityUpdateChoices();
@@ -787,7 +812,7 @@ var universityUpdateChoices = function () {
 			universityUpdateChoices();
 		})
 		kickDoor.click(function() {
-			playerCharacter.choice = 4;
+			playerCharacter.choice = 6;
 			universityUpdateChoices();
 		})
 	} else if (playerCharacter.choice === 2) {
@@ -808,13 +833,224 @@ var universityUpdateChoices = function () {
 			playerCharacter.choice = 0;
 			hospitalUpdateChoices();
 		})
+		if (playerCharacter.museum === "discovered") {
+			choiceText3.text("Museum");
+			var museum = $("<button id='museum' class='choiceButton'>Choose</button>")
+			choiceText3.append(museum);
+			museum.click(function() {
+				playerCharacter.choice = 0;
+				museumUpdateChoices();
+			})
 
+		}
 	} else if (playerCharacter.choice === 3) {
 		clearChoiceBox();
-		updateNarrative("'A book you say? Well what are you waiting for! Bring it in here.' You head into the office and find a greying man in glasses pouring over a number of ancient scrolls on his desk. 'I must admit, this is compelling timing. These ancient texts describe tonight as one of great cosmological power - I'm a man of science, but the things I've seen procuring these scrolls... never mind that. Give me the book.' You hand over the book and the professor gets to work. A short while later he looks up with a wild look in his eyes. 'This book is written in an alien derivative of Egyptian script - I can't make 100% sense of it. But there are instructions for some kind of ritual. It can only be performed at a place that meets very specific criteria - if what you've told me about your night is true the cult must be there right now attempting their ritual! We must stop them.'")
+		updateNarrative("'A book you say? Well what are you waiting for! Bring it in here.' You head into the office and see the professor was pouring over a number of ancient scrolls. 'I must admit, this is compelling timing. These ancient texts describe tonight as one of great cosmological power - I'm a man of science, but the things I've seen procuring these scrolls... never mind that. How did you find the book?' You explain the insane events of your evening and hand over the book. A short while later he looks up with a wild look in his eyes. 'This book is written in an alien derivative of Egyptian script - I can't make 100% sense of it. But there are instructions for some kind of ritual. It can only be performed at a place that meets very specific criteria - if what you've told me about your night is true the cult must be there right now attempting their ritual! We must stop them. Before we leave - there are some arcane secrets in this book that might be useful in the battle ahead - but they were not meant for man to know. Would you like me to teach you?'");
+		playerCharacter.professor = 1;
+		choiceText1.text("You're gonna need every edge you can get. Time for some magic lessons.");
+		choiceText2.text("Ancient magic screwing with your head? Hard pass");
+		var embraceMagic = $("<button id='embraceMagic' class='choiceButton'>Choose</button>");
+		var rejectMagic = $("<button id='rejectMagic' class='choiceButton'>Choose</button>");
+		playerCharacter.museum = "discovered";
+		choiceText1.append(embraceMagic);
+		choiceText2.append(rejectMagic);
+		embraceMagic.click(function() {
+			playerCharacter.choice = 4;
+			universityUpdateChoices();
+		})
+		rejectMagic.click(function() {
+			playerCharacter.choice = 5;
+			universityUpdateChoices();
+		})
+	} else if (playerCharacter.choice === 4) {
+		clearChoiceBox();
+		updateNarrative("The professor gives you a crash course in ancient, forbidden magic. You learned the spell heal. It allows you to use some of your sanity to restore your health.")
+		var heal = {
+			name: "heal",
+			use: function () {
+				playerCharacter.health = 10;
+				playerCharacter.sanity -= 5;
+			}
+		}
+		playerCharacter.spells.push(heal);
+		choiceText1.text("Not much time to lose, head to the museum");
+		choiceText2.text("There might be more useful things to find in town. Head out.")
+		var museum = $("<button id='museum' class='choiceButton'>Choose</button>");
+ 		var backToTown = $("<button id='backToTown' class='choiceButton'>Choose</button>");
+ 		choiceText1.append(museum);
+ 		choiceText2.append(backToTown);
+ 		museum.click(function() {
+ 			playerCharacter.choice = 0;
+ 			museumUpdateChoices();
+ 		})
+ 		backToTown.click(function() {
+ 			playerCharacter.choice = 2;
+ 			universityUpdateChoices();
+ 		})
+	} else if (playerCharacter.choice === 5) {
+		updateNarrative("Smart man steering clear of the supernatural. Well, I might have something else that might be useful. At least take this bowie knife.");
+		var bowieKnife = {
+				name: "Bowie Knife",
+				power: 4,
+				speed: 1,
+				cost: 0
+			};
+		playerCharacter.fight.push(bowieKnife);
+		choiceText1.text("Not much time to lose, head to the museum");
+		choiceText2.text("There might be more useful things to find in town. Head out.")
+		var museum = $("<button id='museum' class='choiceButton'>Choose</button>");
+ 		var backToTown = $("<button id='backToTown' class='choiceButton'>Choose</button>");
+ 		choiceText1.append(museum);
+ 		choiceText2.append(backToTown);
+ 		museum.click(function() {
+ 			playerCharacter.choice = 0;
+ 			museumUpdateChoices();
+ 		})
+ 		backToTown.click(function() {
+ 			playerCharacter.choice = 2;
+ 			universityUpdateChoices();
+ 		})
+	} else if (playerCharacter.choice === 6) {
+		clearChoiceBox();
+		updateNarrative("You kick down the door and scare the shit out of a kindly out man in glasses. He starts to protest but you cut him short, 'I need you to look at this book. Now.'")
+		choiceText1.text("Investigate the book with the professor")
+		var bookLearning = $("<button id='investigate' class='choiceButton'>Choose</button>");
+		choiceText1.append(bookLearning);
+		bookLearning.click(function() {
+			playerCharacter.choice= 3;
+			universityUpdateChoices();
+		})
 	}
 }
 
+var museumUpdateChoices = function () {
+	if (playerCharacter.choice === 0) {
+		clearChoiceBox();
+		updateNarrative("You pull up to the site of the ritual - the museum. Even from a distance you can hear the strange chanting from your dreams. You're not exactly sure what they're planning, but you're positive about one thing - they have to be stopped. You prepare yourself to head inside");
+		choiceText1.text("Head inside");
+		var headIntoTheMuseum = $("<button id='headIntoTheMuseum' class='choiceButton'>Choose</button>");
+		choiceText1.append(headIntoTheMuseum);
+		headIntoTheMuseum.click(function () {
+			playerCharacter.choice = 1;
+			museumUpdateChoices();
+		})
+	} else if (playerCharacter.choice === 1 && playerCharacter.deputy === 1) {
+		clearChoiceBox();
+		updateNarrative("As you head into the museum you are immediately confronted by three ghouls - they rush towards you only to be intercepted by the deputy. He combats one of the ghouls as you begin fighting the other two.");
+		choiceText1.text("Time to fight");
+		var fightGhouls = $("<button id='fightGhouls' class='choiceButton'>Choose</button>");
+		choiceText1.append(fightGhouls);
+		fightGhouls.click(function() {
+			playerCharacter.choice = 2;
+			initiateBattle(2, "Ghoul", 15,3,10, "imgs/ghoul.gif");
+			museumUpdateChoices();
+		})
+	} else if(playerCharacter.choice === 1 && playerCharacter.deputy === 0) {
+		clearChoiceBox();
+		updateNarrative("As you head into the museum you are immediately confronted by three ghouls - they rush towards you!");
+		choiceText1.text("Time to fight");
+		var fightGhouls = $("<button id='fightGhouls' class='choiceButton'>Choose</button>");
+		choiceText1.append(fightGhouls);
+		fightGhouls.click(function() {
+			playerCharacter.choice = 2;
+			initiateBattle(3, "Ghoul", 15,3,10, "imgs/ghoul.gif");
+			museumUpdateChoices();
+		})
+	} else if(playerCharacter.choice === 2 && playerCharacter.doctor === 1) {
+		clearChoiceBox();
+		updateNarrative("You stand over the ghouls, beaten, bloody, but victorious. Luckily, the doctor is there to patch you up. She restores you to full health. You've made it past the perimeter - now you need to get to the center of this ritual and stop it.")
+		playerCharacter.health = 10;
+		choiceText1.text("Head to the final battle");
+		var finalBattle = $("<button id='finalBattle' class='choiceButton'>Choose</button>")
+		choiceText1.append(finalBattle);
+		finalBattle.click(function() {
+			playerCharacter.choice = 3;
+			museumUpdateChoices();
+		})
+	} else if (playerCharacter.choice === 2 && playerCharacter.doctor === 0) {
+		clearChoiceBox();
+		updateNarrative("You stand over the ghouls, beaten, bloody, but victorious. You've made it past the perimeter - now you need to get to the center of this ritual and stop it.")
+		choiceText1.text("Head to the final battle");
+		var finalBattle = $("<button id='finalBattle' class='choiceButton'>Choose</button>")
+		choiceText1.append(finalBattle);
+		finalBattle.click(function() {
+			playerCharacter.choice = 3;
+			museumUpdateChoices();
+		})
+	} else if (playerCharacter.choice === 3 && playerCharacter.professor === 1) {
+		clearChoiceBox();
+		updateNarrative("You step into the chamber and see a massive pentagram surrounded by three hooded figures. A twisting, horrible moster is slowly emerging, becoming more and more solid as the chant nears completion. The professor begins to chant, and his words fill you with strength. Your sanity is fully restored as you prepare to fight the Abomination.")
+		choiceText1.text("Fight the monster");
+		playerCharacter.sanity = 20;
+		var fightMonster = $("<button id='fightMonster' class='choiceButton'>Choose</button>");
+		choiceText1.append(fightMonster);
+		fightMonster.click(function () {
+			playerCharacter.choice = 4;
+			initiateBattle(1, "Abomination", 40,4,10, "imgs/MonsterThing.gif");
+			museumUpdateChoices();
+		})
+	} else if (playerCharacter.choice === 3 && playerCharacter.professor === 0) {
+		clearChoiceBox();
+		updateNarrative("You step into the chamber and see a massive pentagram surrounded by three hooded figures. A twisting, horrible moster is slowly emerging, becoming more and more solid as the chant nears completion. It's time to fight the abomination.")
+		choiceText1.text("Fight the monster");
+		var fightMonster = $("<button id='fightMonster' class='choiceButton'>Choose</button>");
+		choiceText1.append(fightMonster);
+		fightMonster.click(function () {
+			playerCharacter.choice = 4;
+			initiateBattle(1, "Abomination", 40,4,10, "imgs/MonsterThing.gif");
+			museumUpdateChoices();
+		})
+	} else if (playerCharacter.choice === 4) {
+		clearChoiceBox();
+		updateNarrative("The abomination lets out a piercing shriek as it leaves the world. The psychic link it built with the cultists overloads their brains and instantly (and conveniently) kills all of them. In the center of the pentagram a single object is left - the point of your search, and something you'll never take for granted again - your bedroom door. Congratulations!")
+		choiceText1.text("Congratulations! Do you want to play again?")
+		choiceText1.append("<button id='reset'>Reset</button>")
+    	var resetButton = $("#reset");
+    	$(".choiceButton").remove();
+    	    resetButton[0].addEventListener("click", function () {
+    	currentEnemyArray = [];
+    	playerCharacter.actions = 2;
+    	playerCharacter.choice = 0;
+    	enemyCounter = 0;
+    	numEnemies = 0;
+    	numCultists = 3;
+    	$("#theFeed").empty();
+    	narrativeText.text("You wake up from a strange dream, feverish and sweating. The details immediately slip away from you and the only thing you can remember is a dull chant in a language you've never heard. Your head is still pounding to its rhythm. You look up from bed and realize that, against all logic, the door has disappeared from your bedroom. What do you do?");
+    	choiceText1.text("Go back to sleep");
+    	choiceText2.text("Search the room");
+    	choiceText3.text("Jump out the window");
+    	choiceText1.append(choiceButton1[0]);
+    	choiceText2.append(choiceButton2[0]);
+    	choiceText3.append(choiceButton3[0]);
+    	$("#playerPosition").empty();
+    	$("#position1").empty();
+    	$("#position2").empty();
+    	$("#position3").empty();
+    	choiceItems.fadeIn();
+    	resetButton.remove();
+    	addEventListeners();
+    	playerCharacter.health = 10;
+    	playerCharacter.sanity = 15;
+    	playerCharacter.strength = 5;
+    	playerCharacter.alive = true;
+    	$("#playerHealthBar").attr("value", playerCharacter.health);
+    	initialChoice0();
+    	initialChoice1();
+    	initialChoice2();
+    	var uDead = setInterval(function() {
+			if (playerCharacter.health <= 0) {
+			updateNarrative("You have died. Sorry!")
+			newBattleMessage("You have been killed.")
+			playerCharacter.actions = 0;
+			gameOver();
+			clearInterval(uDead);
+
+	}
+
+}, 100)
+	})
+	}
+} 
 
 //programming for the battle component of the game starts here
 var battleDiv = $("#battleDiv");

@@ -171,9 +171,10 @@ var fightButtonEventListener = function () {
 		if (fightMoves.length === undefined) {
 			$("#magicMoves").empty();
 			$("#itemMoves").empty();
-			$('.magicMoves').remove();
-			$(".itemMoves").remove();
+			// $('.magicMoves').remove();
+			// $(".itemMoves").remove();
 			magicMoves.length = undefined;
+			itemMoves.length = undefined;
 			for (i = 0; i < playerCharacter.fight.length; i++) {
 				var newMove = $("<li class='fightMove'></li>");
 				newMove.text(playerCharacter.fight[i].name);
@@ -214,8 +215,8 @@ var magicButtonEventListener = function () {
 		if (magicMoves.length === undefined) {
 			$("#fightMoves").empty();
 			$("#itemMoves").empty();
-			$('.fightMoves').remove();
-			$(".itemMoves").remove();
+			// $('.fightMoves').remove();
+			// $(".itemMoves").remove();
 			fightMoves.length = undefined;
 			itemMoves.length = undefined;
 			for (i = 0; i < playerCharacter.spells.length; i++) {
@@ -228,10 +229,11 @@ var magicButtonEventListener = function () {
 				var newMove = $(magicMoves[i]);
 				newMove.click(function () {
 					var index = $(this).index();
-					currentAttack.name = playerCharacter.spells[index].name;
-					currentAttack.power = playerCharacter.spells[index].power;
-					currentAttack.speed = playerCharacter.spells[index].speed;
-					currentAttack.cost = playerCharacter.spells[index].cost;;
+						var effect = playerCharacter.spells[index].use();
+						console.log(playerCharacter.spells[index].name);
+						currentActions.text(playerCharacter.actions);
+						$("#playerHealthBar").attr("value", playerCharacter.health);
+						currentAttack.index = index;
 				})
 			}
 		}
@@ -244,8 +246,6 @@ var itemButtonEventListener = function () {
 
 			$("#fightMoves").empty();
 			$("#magicMoves").empty();
-			$('.fightMoves').remove();
-			$("#magicMoves").remove();
 			fightMoves.length = undefined;
 			magicMoves = $("#magicMoves");
 			magicMoves.length = undefined;
