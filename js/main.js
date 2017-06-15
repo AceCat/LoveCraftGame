@@ -82,6 +82,9 @@ var uDead = setInterval(function() {
 
 }, 100)
 
+var attackTarget;
+var lastAttack;
+
 var newBattleMessage = function (str) {
 			var newFeedItem = $("<li></li>");
 			newFeedItem.text(str);
@@ -103,7 +106,7 @@ function Enemy(name,hp,dmg,exp,img){
 		newBattleMessage(this.name + " hit you for " + this.strength + " damage")
 		$("#playerHealthBar").attr("value", playerCharacter.health);
 		$("#playerHealthValue").text(playerCharacter.health);
-	};
+};
 
   this.spawn = function() {
   		numEnemies++;
@@ -115,10 +118,11 @@ function Enemy(name,hp,dmg,exp,img){
 		this.id = this.name + enemyCounter;
 		this.index = enemyCounter;
 		this.enemyAlive = true;
+		this.class = "Enemy";
 		var self = this;
 		var enemyHealthBar = $("<progress max=" + this.health + "></progress>")
 		$("#position" + numEnemies).append(enemyHealthBar);
-		sprite.click(function() {
+		var target = sprite.click(function() {
 			if (playerCharacter.actions >= currentAttack.speed) {
 			self.health = (self.health - currentAttack.power);
 			$(this).attr("class", "enemy");
@@ -126,12 +130,19 @@ function Enemy(name,hp,dmg,exp,img){
 			playerCharacter.actions = (playerCharacter.actions - currentAttack.speed);
 			newBattleMessage("You hit " + self.name + " with " + currentAttack.name + " for " + currentAttack.power + " damage.")
 			enemyHealthBar.attr("value", self.health);
-			currentActions.text(playerCharacter.actions)
+			currentActions.text(playerCharacter.actions);
+			attackTarget = self;
+			lastAttack = currentAttack.name
+				if (currentAttack.name === "Revolver") {
+					playerCharacter.inventory[currentAttack.index].charges--;
+					$("li:contains('Revolver:')").text(playerCharacter.inventory[currentAttack.index].name + ": " + playerCharacter.inventory[currentAttack.index].charges);
+
+				}
 		} else if (playerCharacter.actions < currentAttack.speed && playerCharacter.actions > 0) {
 			newBattleMessage("You don't have enough actions to make that attack, pick another.")
 		} else {
 			turn = 0;
-		}
+		} 
 			if (self.health <= 0) {
 				newBattleMessage(self.name + " has been killed.")
 				playerCharacter.experience = (playerCharacter.experience + self.xp)
@@ -605,8 +616,42 @@ chapter2UpdateChoices = function() {
 				keepDriving.click(function() {
 				chapter2UpdateChoices();
 		})
+	} else if (playerCharacter.choice === 5) {
+		clearChoiceBox();
+		updateNarrative("You pull up in front of the police station, a squat concrete building near the center of town. You rush from your car through the front doors and find the front desk and lobby conspicuously empty. Even more concerning, you don't hear any noise from deeper in the station. The place is dead quiet")
+		choiceText1.text("Nope, you're out of here");
+		var goBack = $("<button id='goBack' class='choiceButton'>Choose</button>");
+		choiceText1.append(goBack);
+		goBack.click(function () {
+			playerCharacter.choice = 3;
+			chapter2UpdateChoices();
+		})
+		choiceText2.text("Look behind the front desk and see what you can find");
+		var frontDesk = $("<button id='frontDesk' class='choiceButton'>Choose</button>");
+		frontDesk.click(function() {
+			playerCharacter.choice = 0;
+			policeStationUpdateChoices();
+		})
+
+
 	}
 };
+
+var policeStationUpdateChoices = function() {
+	if (playerCharacter.choice === 0) {
+		updateNarrative("You slowly walk across the lobby, nerves clenced for a sudden surprise. Finally you get close enough to look over the front desk and with a mix of apprehension and excitement crane your head over. You see... nothing. Behind the desk is totally normal and empty, like the person using it had just cleared out for lunch. The only irregular facet is that, upon closer inspection, there is a service revolver on the ground, kicked partially under the desk. You pick it up and discover that it only has five bullets - somebody fired this gone. (Revolver has been added to your inventory). What do you do next?")
+		var revolver = {
+					name: "Revolver",
+					charges: 5,
+					use: function () {
+					currentAttack.name = "Revolver";
+					currentAttack.power = 10;
+					currentAttack.speed = 1;
+					currentAttack.cost = 0;
+					}
+				}
+		}
+}
 
 //programming for the battle component of the game starts here
 var battleDiv = $("#battleDiv");
@@ -695,7 +740,8 @@ var currentAttack = {
 	name: "",
 	power: "",
 	speed: "",
-	cost: ""
+	cost: "",
+	index: "",
 }
 
 var fightButtonEventListener = function () {
@@ -792,15 +838,22 @@ var itemButtonEventListener = function () {
 						newMove.click(function () {
 							var index = $(this).index();
 							var self = this;
-							if (playerCharacter.inventory[index].charges > 0) {
+							if (playerCharacter.inventory[index].charges > 0 && playerCharacter.inventory[index].name !== "Revolver") {
 								var effect = playerCharacter.inventory[index].use();
 								playerCharacter.inventory[index].charges--;
-								newItem.text(playerCharacter.inventory[index].name + ": " + playerCharacter.inventory[index].charges);
 								playerCharacter.actions = playerCharacter.actions - 1;
 								currentActions.text(playerCharacter.actions);
 								$("#playerHealthBar").attr("value", playerCharacter.health);
-
-							} else {
+								currentAttack.index = index;
+							} else if (playerCharacter.inventory[index].charges > 0 && playerCharacter.inventory[index].name === "Revolver") {
+								var effect = playerCharacter.inventory[index].use();
+								newItem.text(playerCharacter.inventory[index].name + ": " + playerCharacter.inventory[index].charges);
+								currentActions.text(playerCharacter.actions);
+								newItem.text(playerCharacter.inventory[index].name + ": " + playerCharacter.inventory[index].charges);
+								$("#playerHealthBar").attr("value", playerCharacter.health);
+								currentAttack.index = index;
+							}
+							 else {
 								newBattleMessage("That item is depleted, sorry!")
 							}
 					})
