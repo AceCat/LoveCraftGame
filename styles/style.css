@@ -1,6 +1,7 @@
 .container {
 	background-color: black;
 	height: 700px;
+	width: 1000px;
 }
 
 #narrativeBox {
@@ -129,7 +130,8 @@ p {
 }
 
 #playerImage {
-	width: 70%;
+	position: absolute;
+	bottom: 0;
 }
 
 #nextButton {
@@ -141,8 +143,8 @@ p {
 }
 
 #playerPosition {
-	height: 100%;
-	width: 40%;
+	height: 75%;
+	width: 25%;
 	margin-top: 85px;
 	float: left;
 }
@@ -151,26 +153,29 @@ p {
 
 #position1 {
 	height: 75%;
-	width: 20%;
+	width: 25%;
 	margin-top: 100px;
 	display: inline-block;
-	float: right;
+	float: left;
+	align-content: center;
 }
 
 #position2 {
 	height: 75%;
-	width: 20%;
+	width: 25%;
 	margin-top: 100px;
 	display: inline-block;
-	float: right;
+	float: left;
+	align-content: center;
 }
 
 #position3 {
 	height: 75%;
-	width: 20%;
+	width: 25%;
 	margin-top: 100px;
 	display: inline-block;
-	float: right;
+	float: left;
+	align-content: center;
 }
 
 #currentActions {
@@ -185,6 +190,8 @@ p {
 #playerHealthBar {
 	margin-left: 40px;
 	color: red;
+	position: absolute;
+	bottom: 0;
 }
 
 .choiceButton {
@@ -204,4 +211,8 @@ p {
 	color: white;
 	margin-right: 30px;
 
+}
+
+progress {
+	margin-left: 30px;
 }

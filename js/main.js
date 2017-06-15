@@ -2,6 +2,8 @@ var playerCharacter = {
 	health: 10,
 	sanity: 15,
 	strength: 5,
+	deputy: 0,
+	doctor: 0,
 	fight: [punch = {
 				name: "punch",
 				power: 3,
@@ -33,152 +35,13 @@ var playerCharacter = {
 	choice: 0,
 	alive: true,
 	experience: 0,
-	chapter: 1
+	chapter: 1,
+	museum: "discovered"
 };
 
 var car = "undamaged";
 
-var currentEnemyArray = [];
-var enemyCounter = 0;
-var numEnemies = 0;
-
 var numCultists = 3;
-
-//Here are the variables that determine what turn it is
-var turn = 1;
-var currentActions = $("#currentActions");
-
-var turnSwitch = setInterval(function(){
-	if (playerCharacter.actions > 0) {
-	} else if (playerCharacter.health <= 0) {
-		clearInterval();
-	} else {
-		for (i = 0; i < currentEnemyArray.length; i++) {
-			currentEnemyArray[i].attack();
-		}
-	turn = 1;
-	playerCharacter.actions = 2;
-	currentActions.text(playerCharacter.actions);
-	}
-
-
-}, 100);
-
-var uDead = setInterval(function() {
-	if (playerCharacter.health <= 0) {
-		updateNarrative("You have died. Sorry!")
-		newBattleMessage("You have been killed.")
-		playerCharacter.actions = 0;
-		gameOver();
-		clearInterval(uDead);
-
-	} else if (playerCharacter.sanity <= 0) {
-		updateNarrative("You have gone totally, irrevocably bonkers")
-		playerCharacter.actions = 0;
-		gameOver();
-		choiceText3.fadeOut();
-		clearInterval(uDead);
-	}
-
-}, 100)
-
-var attackTarget;
-var lastAttack;
-
-var newBattleMessage = function (str) {
-			var newFeedItem = $("<li></li>");
-			newFeedItem.text(str);
-			$("#theFeed").append(newFeedItem);
-			var feedDiv = $("#feedDiv");
-  			feedDiv.scrollTop(feedDiv[0].scrollHeight);
-};
-
-
-function Enemy(name,hp,dmg,exp,img){
-  this.name = name;
-  this.health = hp;
-  this.strength = dmg;
-  this.xp = exp;
-  this.img = img;
-  this.id = "";
-  this.attack = function () {
-		playerCharacter.health = (playerCharacter.health - this.strength);
-		newBattleMessage(this.name + " hit you for " + this.strength + " damage")
-		$("#playerHealthBar").attr("value", playerCharacter.health);
-		$("#playerHealthValue").text(playerCharacter.health);
-};
-
-  this.spawn = function() {
-  		numEnemies++;
-		var sprite = $("<img/>");
-		sprite.attr("src", this.img);
-		sprite.attr("id", this.name + enemyCounter);
-		$("#position" + numEnemies).append(sprite);
-		console.log(this);
-		this.id = this.name + enemyCounter;
-		this.index = enemyCounter;
-		this.enemyAlive = true;
-		this.class = "Enemy";
-		var self = this;
-		var enemyHealthBar = $("<progress max=" + this.health + "></progress>")
-		$("#position" + numEnemies).append(enemyHealthBar);
-		var target = sprite.click(function() {
-			if (playerCharacter.actions >= currentAttack.speed) {
-			self.health = (self.health - currentAttack.power);
-			$(this).attr("class", "enemy");
-			playerCharacter.sanity = (playerCharacter.sanity - currentAttack.cost)
-			playerCharacter.actions = (playerCharacter.actions - currentAttack.speed);
-			newBattleMessage("You hit " + self.name + " with " + currentAttack.name + " for " + currentAttack.power + " damage.")
-			enemyHealthBar.attr("value", self.health);
-			currentActions.text(playerCharacter.actions);
-			attackTarget = self;
-			lastAttack = currentAttack.name
-				if (currentAttack.name === "Revolver") {
-					playerCharacter.inventory[currentAttack.index].charges--;
-					$("li:contains('Revolver:')").text(playerCharacter.inventory[currentAttack.index].name + ": " + playerCharacter.inventory[currentAttack.index].charges);
-
-				}
-		} else if (playerCharacter.actions < currentAttack.speed && playerCharacter.actions > 0) {
-			newBattleMessage("You don't have enough actions to make that attack, pick another.")
-		} else {
-			turn = 0;
-		} 
-			if (self.health <= 0) {
-				newBattleMessage(self.name + " has been killed.")
-				playerCharacter.experience = (playerCharacter.experience + self.xp)
-				delete self.id;
-				currentEnemyArray.splice(self.index, 1);
-				self.enemyAlive = false;
-				$(self).removeAttr("class");
-				numEnemies--;
-				this.remove();
-				enemyHealthBar.remove();
-			}
-			if (numEnemies <= 0) {
-				newBattleMessage("You successfully defeated all the enemies!")
-				$("#nextButton").fadeIn();
-				addEventListeners();
-				enemyCounter = 0;
-			} 	
-  })
-		 enemyCounter++;
-
-  };
-
-
-}
-
-//This array will hold the different kinds of enemies you can encounter in the game
-enemyTypes = [];
-//Let's create some different enemy types and push them into an array
-	enemyTypes.push(new Enemy("Cultist",7,2,5,"imgs/cultist.gif"));
-	enemyTypes.push(new Enemy("Ghoul",10,3,10));
-
-var cultist = {
-	name: "jerry",
-	health: 10,
-	strength: 2
-};
 
 
 //All of this functionality is the choose your own adventure component
@@ -225,6 +88,7 @@ var gameOver = function () {
     	playerCharacter.choice = 0;
     	enemyCounter = 0;
     	numEnemies = 0;
+    	numCultists = 3;
     	$("#theFeed").empty();
     	narrativeText.text("You wake up from a strange dream, feverish and sweating. The details immediately slip away from you and the only thing you can remember is a dull chant in a language you've never heard. Your head is still pounding to its rhythm. You look up from bed and realize that, against all logic, the door has disappeared from your bedroom. What do you do?");
     	choiceText1.text("Go back to sleep");
@@ -233,6 +97,7 @@ var gameOver = function () {
     	choiceText1.append(choiceButton1[0]);
     	choiceText2.append(choiceButton2[0]);
     	choiceText3.append(choiceButton3[0]);
+    	$("#playerPosition").empty();
     	$("#position1").empty();
     	$("#position2").empty();
     	$("#position3").empty();
@@ -418,7 +283,7 @@ var addEventListeners = function () {
 			updateNarrative("You sneak away from the figures in your kitchen. Your progress is agonizing as you expect one of them to shout in discovery at any moment, but whether through guile our luck you make your way to the back door and grab the baseball bat. Nice work! Now what are you going to do with it?");
 			var Bat = {
 				name: "Baseball Bat",
-				power: 6,
+				power: 4,
 				speed: 1,
 				cost: 0
 			};
@@ -523,7 +388,14 @@ var addEventListeners = function () {
 var clearChoiceBox = function() {
 	choiceText1.empty();
 	choiceText2.empty();
+	choiceText3.empty();
 }
+
+var newChapter2Button = function (id, choiceText) {
+	var newButton = $("<button id='" + id + "' class='choiceButton'>Choose</button>");
+	newButton.appendTo(choiceText);
+}
+
 
 chapter2UpdateChoices = function() {
 	if (playerCharacter.choice === 0) {
@@ -595,16 +467,16 @@ chapter2UpdateChoices = function() {
 		choiceText3.append(hospital);
 		//event listeners for the choices go here
 		$("#policeStation").click(function() {
-			playerCharacter.choice = 5;
-			chapter2UpdateChoices();
+			playerCharacter.choice = 6;
+			policeStationUpdateChoices();
 		})
 		$("#university").click(function() {
-			playerCharacter.choice = 6;
-			chapter2UpdateChoices();
+			playerCharacter.choice = 0;
+			updateUniversityChoices();
 		})
 		$("#hospital").click(function() {
-			playerCharacter.choice = 7;
-			chapter2UpdateChoices();
+			playerCharacter.choice = 0;
+			hospitalUpdateChoices();
 		})
 
 	} else if (playerCharacter.choice === 4) {
@@ -616,30 +488,13 @@ chapter2UpdateChoices = function() {
 				keepDriving.click(function() {
 				chapter2UpdateChoices();
 		})
-	} else if (playerCharacter.choice === 5) {
-		clearChoiceBox();
-		updateNarrative("You pull up in front of the police station, a squat concrete building near the center of town. You rush from your car through the front doors and find the front desk and lobby conspicuously empty. Even more concerning, you don't hear any noise from deeper in the station. The place is dead quiet")
-		choiceText1.text("Nope, you're out of here");
-		var goBack = $("<button id='goBack' class='choiceButton'>Choose</button>");
-		choiceText1.append(goBack);
-		goBack.click(function () {
-			playerCharacter.choice = 3;
-			chapter2UpdateChoices();
-		})
-		choiceText2.text("Look behind the front desk and see what you can find");
-		var frontDesk = $("<button id='frontDesk' class='choiceButton'>Choose</button>");
-		frontDesk.click(function() {
-			playerCharacter.choice = 0;
-			policeStationUpdateChoices();
-		})
-
-
 	}
-};
+}
 
 var policeStationUpdateChoices = function() {
 	if (playerCharacter.choice === 0) {
-		updateNarrative("You slowly walk across the lobby, nerves clenced for a sudden surprise. Finally you get close enough to look over the front desk and with a mix of apprehension and excitement crane your head over. You see... nothing. Behind the desk is totally normal and empty, like the person using it had just cleared out for lunch. The only irregular facet is that, upon closer inspection, there is a service revolver on the ground, kicked partially under the desk. You pick it up and discover that it only has five bullets - somebody fired this gone. (Revolver has been added to your inventory). What do you do next?")
+		clearChoiceBox();
+		updateNarrative("You slowly walk across the lobby, nerves clenched for a sudden surprise. Finally you get close enough to look over the front desk and with a mix of apprehension and excitement crane your head over. You see... nothing. Behind the desk is totally normal and empty, like the person using it had just cleared out for lunch. The only irregular facet is that, upon closer inspection, there is a service revolver on the ground, kicked partially under the desk. You pick it up and discover that it only has five bullets - somebody fired this gun. (Revolver has been added to your inventory). What do you do next?")
 		var revolver = {
 					name: "Revolver",
 					charges: 5,
@@ -650,8 +505,316 @@ var policeStationUpdateChoices = function() {
 					currentAttack.cost = 0;
 					}
 				}
+		playerCharacter.inventory.push(revolver);
+		choiceText1.text("Call out to see if anyone is there");
+		choiceText2.text("Leave");
+		var callOut = $("<button id='callOut' class='choiceButton'>Choose</button>");
+		choiceText1.append(callOut);
+		var leave = $("<button id='leave' class='choiceButton'>Choose</button>");
+		choiceText2.append(leave);
+		//Event for calling out
+		callOut.click(function () {
+			playerCharacter.choice = 1;
+			policeStationUpdateChoices();
+		})
+		//Event for heading deeper
+		leave.click(function() {
+			playerCharacter.choice = 3;
+			policeStationUpdateChoices();
+		})
+	} else if (playerCharacter.choice === 1) {
+		clearChoiceBox();
+		var result = Math.random();
+		if (result > .5) {
+			updateNarrative("'Hello? Is anyone there?' At first there is silence, and then, a surprised 'Are you human?' Before you can formulate a response a wild eyed sheriffs deputy pokes his head out from one of the offices. 'Thank God, when they came I hid under my desk. They... they took everyone. It was horrible.");
+			choiceText1.text("You don't trust this guy, back away slowly and get out of the police station.")
+			choiceText2.text("'Slow down, what happened here? Let's work together and figure this out.'")
+			var leaveStation = $("<button id='leaveStation' class='choiceButton'>Choose</button>");
+			choiceText1.append(leaveStation);
+			var workTogether = $("<button id='workTogether' class='choiceButton'>Choose</button>");
+			choiceText2.append(workTogether);
+			//Event for leaving station
+			leaveStation.click(function () {
+				playerCharacter.choice = 3;
+				policeStationUpdateChoices();
+			})
+			//Event for working together
+			workTogether.click(function () {
+				playerCharacter.choice = 4;
+				policeStationUpdateChoices();
+			})
+		} else {
+			clearChoiceBox();
+			updateNarrative("'Hello? Is anyone there?' For a moment there's silence, and then you hear the shuffling of feet. To your horror two shambling zombies round the corner and immediately beeline towards you!")
+			choiceText1.text("You have no choice but to fight these creatures")
+			var fightZombies = $("<button id='fightZombies' class='choiceButton'>Choose</button>");
+			choiceText1.append(fightZombies);
+			fightZombies.click(function () {
+				playerCharacter.choice = 5;
+				policeStationUpdateChoices();
+				initiateBattle(2, "Zombie", 15,1,5, "imgs/zombie.gif");
+
+			})
 		}
+	} else if (playerCharacter.choice === 3) {
+		clearChoiceBox();
+		updateNarrative("You leave the police station. Where do you go now?");
+		choiceText1.text("Head to the university");
+		choiceText2.text("Head to the hospital");
+		var university = $("<button id='university' class='choiceButton'>Choose</button>")
+		var hospital = $("<button id='hospital' class='choiceButton'>Choose</button>")
+		choiceText1.append(university);
+		choiceText2.append(hospital);
+		//Event listener for hospital
+		hospital.click(function () {
+			playerCharacter.choice = 0;
+			hospitalUpdateChoices();
+		}) 
+		university.click(function () {
+			playerCharacter.choice = 0;
+			universityUpdateChoices();
+		})
+
+	} else if (playerCharacter.choice === 4) {
+		clearChoiceBox();
+		updateNarrative("The Deputy takes a deep breath. 'What's going on? That's a tough question. One second I was minding my own business, the next there are creatures all over the police station. Horrible tentacled bastards swinging our boys around. We tried to fight but there was way too many - we didn't last one. Before we knew it they had us all dead or unconcious and started carting the bodies somewhere outside. I'm not proud, but at that point I just hid under my desk and waited for it to be over. Guess I'm not much of a cop eh? At least I can still help you. Here, let me patch you up.'' (You've been fully healed.) He continues, 'I don't know who you are, but if you're trying to stop this thing I heard them say that they were headed to the museum to perform 'the Ritual' whatever that means it can't be good. I don't know what you're doing - but I'll head over there. Meet me when you're ready to put a stop to this.")
+		playerCharacter.health = 10;
+		playerCharacter.deputy = 1;
+		playerCharacter.museum = "discovered";
+		choiceText1.text("There isn't much time to lose, lets head over to the museum.");
+		var museum = $("<button id='museumButton' class='choiceButton'>Choose</button>");
+		choiceText1.append(museum);
+		choiceText2.text("Running in there blind is too dangerous - keep searching the town.")
+		var keepSearching = $("<button id='keepSearchingButton' class='choiceButton'>Choose</button>");
+		choiceText2.append(keepSearching);
+		//Head to the museum event listener
+		museum.click(function() {
+			playerCharacter.choice = 0;
+			museumUpdateChoices();
+		})
+		//Keep Searching event listener
+		keepSearching.click(function () {
+			playerCharacter.choice = 3
+			policeStationUpdateChoices();
+		})
+
+	} else if (playerCharacter.choice === 5) {
+		clearChoiceBox();
+		updateNarrative("The zombies are dead and all is quiet in the police station. After a second, a timid deputy sticks his head around the corner of one of the offices. 'You killed them? Thank god. They had me stuck in my office for the last hour.'");
+			choiceText1.text("You don't trust this guy, back away slowly and get out of the police station.")
+			choiceText2.text("'Slow down, what happened here? Let's work together and figure this out.'")
+			var leaveStation = $("<button id='leaveStation' class='choiceButton'>Choose</button>");
+			choiceText1.append(leaveStation);
+			var workTogether = $("<button id='workTogether' class='choiceButton'>Choose</button>");
+			choiceText2.append(workTogether);
+			//Event for leaving station
+			leaveStation.click(function () {
+				playerCharacter.choice = 3;
+				policeStationUpdateChoices();
+			})
+			//Event for working together
+			workTogether.click(function () {
+				playerCharacter.choice = 4;
+				policeStationUpdateChoices();
+			})
+		//code about killing the zombies and discovering the ritual,
+	}  else if (playerCharacter.choice === 6) {
+		clearChoiceBox();
+		updateNarrative("You pull up in front of the police station, a squat concrete building near the center of town. You rush from your car through the front doors and find the front desk and lobby conspicuously empty. Even more concerning, you don't hear any noise from deeper in the station. The place is dead quiet")
+		choiceText1.text("Nope, you're out of here");
+		var goBack = $("<button id='goBack' class='choiceButton'>Choose</button>");
+		var frontDesk = $("<button id='frontDesk' class='choiceButton'>Choose</button>");
+		choiceText1.append(goBack);
+		choiceText2.text("Look behind the front desk and see what you can find");
+		choiceText2.append(frontDesk);
+		goBack.click(function () {
+			playerCharacter.choice = 3;
+			policeStationUpdateChoices();
+		})
+		frontDesk.click(function() {
+			playerCharacter.choice = 0;
+			policeStationUpdateChoices();
+		})
+
+
+	}
 }
+
+
+
+var hospitalUpdateChoices = function () {
+	if (playerCharacter.choice === 0) {
+		clearChoiceBox();
+		updateNarrative("You arrive at the hospital. As you pull up you see a decided lack of activity - from the outside the hospital looks completely abandoned. There is an ambulance outside, do you want to search it or head inside?");
+		choiceText1.text("Search the ambulance");
+		choiceText2.text("Head straight into the hospital");
+		choiceText3.text("This is creepy. Leave");
+		var searchAmbulance = $("<button id='searchAmbulance' class='choiceButton'>Choose</button>");
+		var intoHospital = $("<button id='intoHospital' class='choiceButton'>Choose</button>");
+		var leaveHospital = $("<button id='leaveHospital' class='choiceButton'>Choose</button>");
+		choiceText1.append(searchAmbulance);
+		choiceText2.append(intoHospital);
+		choiceText3.append(leaveHospital);
+		searchAmbulance.click(function () {
+			playerCharacter.choice = 1;
+			hospitalUpdateChoices();
+		});
+		intoHospital.click(function () {
+			playerCharacter.choice = 2;
+			hospitalUpdateChoices();
+		});
+		leaveHospital.click(function() {
+			playerCharacter.choice = 3;
+			hospitalUpdateChoices();
+		})
+	} else if (playerCharacter.choice === 1) {
+		clearChoiceBox();
+		updateNarrative("You head to the ambulance and open the back. It's deserted as expected, but there's a number of useful supplies here! You find a large cache of bandages and enough equipment to patch yourself up.");
+		playerCharacter.health = 10;
+		playerCharacter.inventory[1].charges = 3;
+		choiceText1.text("Head deeper into the hospital");
+		choiceText2.text("Let's not press our luck, get out of there.")
+		var intoHospital = $("<button id='intoHospital' class='choiceButton'>Choose</button>");
+		var leaveHospital = $("<button id='leaveHospital' class='choiceButton'>Choose</button>");
+		choiceText1.append(intoHospital);
+		choiceText2.append(leaveHospital);
+		intoHospital.click(function () {
+			playerCharacter.choice = 2;
+			hospitalUpdateChoices();
+		});
+		leaveHospital.click(function() {
+			playerCharacter.choice = 3;
+			hospitalUpdateChoices();
+		});
+	} else if (playerCharacter.choice === 2) {
+		clearChoiceBox();
+		updateNarrative("You head into the deserted hospital. The lobby is empty and the air feels heavy under the oppressive glare of the flickering flourescent lights. You've barely entered when you hear a scream from further down the hallway. What do you do?")
+		choiceText1.text("I don't place text based adventure games to be a big WUSS. I run towards it.")
+		choiceText2.text("Sounds like a good way to die. I'm getting out of here.")
+		var charge = $("<button id='chargeButton' class='choiceButton'>Choose</button>");
+		var leaveHospital = $("<button id='leaveHospital' class='choiceButton'>Choose</button>");
+		choiceText1.append(charge);
+		choiceText2.append(leaveHospital);
+		charge.click(function() {
+			playerCharacter.choice = 4;
+			hospitalUpdateChoices();
+		})
+		leaveHospital.click(function() {
+			playerCharacter.choice = 3;
+			hospitalUpdateChoices();
+		}); 
+	} else if (playerCharacter.choice === 3) {
+		clearChoiceBox();
+		updateNarrative("You decide to leave the hospital, what are you going to do now?")
+			choiceText1.text("Police Station");
+			choiceText2.text("University");
+			var policeStation = $("<button id='policeStation' class='choiceButton'>Choose</button>")
+			var university = $("<button id='university' class='choiceButton'>Choose</button>")
+		choiceText1.append(policeStation);
+		choiceText2.append(university);
+		//Event listener for hospital
+		policeStation.click(function () {
+			playerCharacter.choice = 6;
+			policeStationUpdateChoices();
+		}) 
+		university.click(function () {
+			playerCharacter.choice = 0;
+			universityUpdateChoices();
+		})
+
+	} else if (playerCharacter.choice === 4) {
+		clearChoiceBox();
+		updateNarrative("You rush down the hallway and careen around the corner. You see a Doctor using a stool to try and keep two ghouls at bay. Her eyes widen in surprise at seeing you, drawing the creatures attention to you. They immediately shift their focus off of her and close on you!");
+		choiceText1.text("Let's get ready to ruuuuuumble");
+		var fightGhouls = $("<button id='fightGhouls' class='choiceButton'>Choose</button>");
+		choiceText1.append(fightGhouls);
+		fightGhouls.click(function () {
+			playerCharacter.choice = 5;
+			initiateBattle(2, "Ghoul", 15,3,10, "imgs/ghoul.gif");
+			hospitalUpdateChoices();
+		})
+	} else if (playerCharacter.choice === 5) {
+		clearChoiceBox();
+		updateNarrative("You finish off the ghouls. As the sounds of the fight fade the Doctor pokes her head out from behind the desk. 'Thank god you showed up. I was worried that I was the last one. I've been searching the hospital for other survivors, but it looks like the cult picked it clean and took everyone. I wish we had more time to talk - but all I know is that a bunch of psycho's in something called 'The Cult of the Worm' are planning some kind of big sacrifice at the museum. We need to stop it! I'll meet you there. But first take this, it might be useful.' (You recieved two shots of adrenaline, you can consume them to gain extra actions during combat!)")
+			var adrenaline = {
+				name: "Adrenaline",
+				charges: 2,
+				use: function () {
+					playerCharacter.actions += 3;
+					}
+				}
+		playerCharacter.inventory.push(adrenaline);
+		playerCharacter.doctor = 1;
+		choiceText1.text("Head out");
+		var leave = $("<button id='leave' class='choiceButton'>Choose</button>");
+		choiceText1.append(leave);
+		leave.click(function() {
+			playerCharacter.choice = 3;
+			hospitalUpdateChoices();
+		})
+	}
+};
+
+var universityUpdateChoices = function () {
+	if (playerCharacter.choice === 0) {
+		clearChoiceBox();
+		updateNarrative("You pull up outside of the linguistics department at the local university, it's about as quiet as you'd expect. You can see a light on in one of the second story offices.");
+		choiceText1.text("Head inside to see who you can find.");
+		choiceText2.text("You have a bad feeling about this, leave.");
+		var headInside = $("<button id='headInside' class='choiceButton'>Choose</button>");
+		var leave = $("<button id='leave' class='choiceButton'>Choose</button>");
+		choiceText1.append(headInside);
+		choiceText.append(leave);
+		headInside.click(function () {
+			playerCharacter.choice = 1;
+			universityUpdateChoices();
+		})
+		leave.click(function() {
+			playerCharacter.choice = 2;
+			universityUpdateChoices();
+		})
+	} else if (playerCharacter.choice === 1) {
+		clearChoiceBox();
+		updateNarrative("You step inside and make your way up to the lit office. The door plaque reveals it's the workplace of 'H.P. Daniels' a professor specializing in the ancient Egyptian language. You knock on the door and are greeted by an alarmed, 'Whose there?!'");
+		choiceText1.text("'Something insane is going on and I need to know more! I've got this creepy book I was hoping you could help me translate it'");
+		choiceText2.text("No games, kick down the door.");
+		var answer = $("<button id='answer' class='choiceButton'>Choose</button>");
+		var kickDoor = $("<button id='kickDoor' class='choiceButton'>Choose</button>");
+		choiceText1.append(answer);
+		choiceText2.append(kickDoor);
+		answer.click(function () {
+			playerCharacter.choice = 3;
+			universityUpdateChoices();
+		})
+		kickDoor.click(function() {
+			playerCharacter.choice = 4;
+			universityUpdateChoices();
+		})
+	} else if (playerCharacter.choice === 2) {
+		clearChoiceBox();
+		updateNarrative("You decide to leave the university, what are you going to do now?")
+			choiceText1.text("Police Station");
+			choiceText2.text("Hospital");
+			var policeStation = $("<button id='policeStation' class='choiceButton'>Choose</button>")
+			var hospital = $("<button id='hospital' class='choiceButton'>Choose</button>")
+		choiceText1.append(policeStation);
+		choiceText2.append(hospital);
+		//Event listener for hospital
+		policeStation.click(function () {
+			playerCharacter.choice = 6;
+			policeStationUpdateChoices();
+		}) 
+		hospital.click(function () {
+			playerCharacter.choice = 0;
+			hospitalUpdateChoices();
+		})
+
+	} else if (playerCharacter.choice === 3) {
+		clearChoiceBox();
+		updateNarrative("'A book you say? Well what are you waiting for! Bring it in here.' You head into the office and find a greying man in glasses pouring over a number of ancient scrolls on his desk. 'I must admit, this is compelling timing. These ancient texts describe tonight as one of great cosmological power - I'm a man of science, but the things I've seen procuring these scrolls... never mind that. Give me the book.' You hand over the book and the professor gets to work. A short while later he looks up with a wild look in his eyes. 'This book is written in an alien derivative of Egyptian script - I can't make 100% sense of it. But there are instructions for some kind of ritual. It can only be performed at a place that meets very specific criteria - if what you've told me about your night is true the cult must be there right now attempting their ritual! We must stop them.'")
+	}
+}
+
 
 //programming for the battle component of the game starts here
 var battleDiv = $("#battleDiv");
@@ -663,62 +826,7 @@ var nextButton = $("#nextButton")
 var fightButton = $("#fightButton");
 var magicButton = $('#magicButton');
 var itemButton = $("#itemButton");
-var run;
 
-var turn = 1;
-
-var newChapter2Button = function (id, choiceText) {
-	var newButton = $("<button id='" + id + "' class='choiceButton'>Choose</button>");
-	newButton.appendTo(choiceText);
-}
-
-
-
-//use the 'arguments.' object similarly to this to pass multiple enemies to this function
-//This function changes the gameboard to the battle arrangement and creates the buttons you use to fight
-var initiateBattle = function (numEnemies, enemyName, enemyHealth, enemyStrength,enemyXP, enemyImg) {
-	narrativeBox.hide();
-	choiceBox.hide();
-	battleDiv = $("#battleDiv");
-	actionDiv = $("#actionDiv");
-	feedDiv = $("#feedDiv");
-	playerCharacter.actions = 2;
-	currentActions.text(playerCharacter.actions);
-	battleDiv.fadeIn();
-	actionDiv.fadeIn();
-	feedDiv.fadeIn();
-	$("#playerPosition").append("<img id='playerImage' src='imgs/PixelDetective.gif'/>");
-	$("#playerPosition").append("<div id='playerHealthSection'><progress id='playerHealthBar' value='' max='10'><span id='playerHealthValue'></span></progress></div>")
-	$("#playerHealthBar").attr("value", playerCharacter.health);
-	for (i = 0; i < numEnemies; i++) {
-		var newEnemy = new Enemy(enemyName,enemyHealth,enemyStrength,enemyXP, enemyImg);
-		currentEnemyArray.push(newEnemy);
-		newEnemy.spawn();
-	}
-	//This section of code attaches event listeners to the four different action buttons
-	//insert a ul that holds the different move categories
-	//each of the li's in that ul hold an additional ul that gives options
-	//selecting one of those UL's triggers the specified move
-}
-
-// spawnEnemy = function (num, kind) {
-// 	for (i = 0; i < num; i++) {
-// 		var enemy = new enemyTypes[kind];
-// 		var sprite = $("<img/>");
-// 		sprite.attr("src", enemyTypes[kind].img);
-// 		battleDiv.append(sprite);
-// 	}
-// }
-
-var endBattle = function () {
-	$("#playerPosition").empty();
-	$("#theFeed").empty();
-	battleDiv.fadeOut();
-	actionDiv.fadeOut();
-	feedDiv.fadeOut();
-	narrativeBox.fadeIn();
-	choiceBox.fadeIn();
-}
 
 nextButton.on("click", function(choiceNum) {
 	endBattle();
@@ -727,145 +835,6 @@ nextButton.on("click", function(choiceNum) {
 	nextButton.fadeOut();
 })
 
-var attackFunction = function (target, name, power, speed) {
-	target = 
-	target.health -= power;
-	playerCharacter.actions = (playerCharacter.actions - speed);
-	var newFeedItem = $("<li></li>")
-	newFeedItem.text("You hit " + target.name + " with " + name + " for " + power + " damage.")
-	$("#theFeed").append(newFeedItem);
-};
-
-var currentAttack = {
-	name: "",
-	power: "",
-	speed: "",
-	cost: "",
-	index: "",
-}
-
-var fightButtonEventListener = function () {
-	fightButton.click(function (){
-		if (fightMoves.length === undefined) {
-			$("#magicMoves").empty();
-			$("#itemMoves").empty();
-			$('.magicMoves').remove();
-			$(".itemMoves").remove();
-			magicMoves.length = undefined;
-			for (i = 0; i < playerCharacter.fight.length; i++) {
-				var newMove = $("<li class='fightMove'></li>");
-				newMove.text(playerCharacter.fight[i].name);
-				$("#fightMoves")[0].append(newMove[0]);
-				newMove.mouseenter(function () {
-					var index = $(this).index();
-					var newMovePower = playerCharacter.fight[index].power;
-					var newMoveSpeed = playerCharacter.fight[index].speed;
-					var newMoveCost = playerCharacter.fight[index].cost;
-					var displayBox = $("<div id='displayBox'></div>")
-					displayBox.text("Power: " + newMovePower + " Speed: " + newMoveSpeed + " Cost: " + newMoveCost);
-					actionDiv.append(displayBox);
-					displayBox.attr("background-color", "white");
-				});
-				newMove.mouseout(function () {
-					$("#displayBox").remove();
-				})
-			}
-			fightMoves = $(".fightMove");
-			for (i = 0; i < fightMoves.length; i++) {
-				var newMove = $(fightMoves[i]);
-				newMove.click(function () {
-					var index = $(this).index();
-					currentAttack.name = playerCharacter.fight[index].name;
-					currentAttack.power = playerCharacter.fight[index].power;
-					currentAttack.speed = playerCharacter.fight[index].speed;
-					currentAttack.cost = playerCharacter.fight[index].cost;
-			}
-		)
-		}
-		}
-		
-	})
-}
-
-var magicButtonEventListener = function () {
-	magicButton.click(function (){
-		if (magicMoves.length === undefined) {
-			$("#fightMoves").empty();
-			$("#itemMoves").empty();
-			$('.fightMoves').remove();
-			$(".itemMoves").remove();
-			fightMoves.length = undefined;
-			itemMoves.length = undefined;
-			for (i = 0; i < playerCharacter.spells.length; i++) {
-				var newSpell = $("<li class='magicMove'></li>");
-				newSpell.text(playerCharacter.spells[i].name);
-				$("#magicMoves").append(newSpell);
-			}
-			magicMoves = $(".magicMove");
-			for (i = 0; i < magicMoves.length; i++) {
-				var newMove = $(magicMoves[i]);
-				newMove.click(function () {
-					var index = $(this).index();
-					currentAttack.name = playerCharacter.spells[index].name;
-					currentAttack.power = playerCharacter.spells[index].power;
-					currentAttack.speed = playerCharacter.spells[index].speed;
-					currentAttack.cost = playerCharacter.spells[index].cost;;
-				})
-			}
-		}
-	})
-}
-
-var itemButtonEventListener = function () {
-	itemButton.click(function (){
-		if (itemMoves.length === undefined) {
-
-			$("#fightMoves").empty();
-			$("#magicMoves").empty();
-			$('.fightMoves').remove();
-			$("#magicMoves").remove();
-			fightMoves.length = undefined;
-			magicMoves = $("#magicMoves");
-			magicMoves.length = undefined;
-			for (i = 0; i < playerCharacter.inventory.length; i++) {
-					var newItem = $("<li class='itemMove'></li>");
-					newItem.text(playerCharacter.inventory[i].name + ": " + playerCharacter.inventory[i].charges);
-					$("#itemMoves").append(newItem);
-				}
-			itemMoves = $(".itemMove");
-				for (i = 0; i < itemMoves.length; i++) {
-					var newMove = $(itemMoves[i]);
-						newMove.click(function () {
-							var index = $(this).index();
-							var self = this;
-							if (playerCharacter.inventory[index].charges > 0 && playerCharacter.inventory[index].name !== "Revolver") {
-								var effect = playerCharacter.inventory[index].use();
-								playerCharacter.inventory[index].charges--;
-								playerCharacter.actions = playerCharacter.actions - 1;
-								currentActions.text(playerCharacter.actions);
-								$("#playerHealthBar").attr("value", playerCharacter.health);
-								currentAttack.index = index;
-							} else if (playerCharacter.inventory[index].charges > 0 && playerCharacter.inventory[index].name === "Revolver") {
-								var effect = playerCharacter.inventory[index].use();
-								newItem.text(playerCharacter.inventory[index].name + ": " + playerCharacter.inventory[index].charges);
-								currentActions.text(playerCharacter.actions);
-								newItem.text(playerCharacter.inventory[index].name + ": " + playerCharacter.inventory[index].charges);
-								$("#playerHealthBar").attr("value", playerCharacter.health);
-								currentAttack.index = index;
-							}
-							 else {
-								newBattleMessage("That item is depleted, sorry!")
-							}
-					})
-			}
-		}
-	})
-}
-
-
-fightButtonEventListener();
-magicButtonEventListener();
-itemButtonEventListener();
 initialChoice0();
 initialChoice1();
 initialChoice2();
