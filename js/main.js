@@ -37,12 +37,15 @@ var playerCharacter = {
 	alive: true,
 	experience: 0,
 	chapter: 1,
-	museum: "discovered"
+	museum: "undiscovered",
+	book: "undiscovered",
+	location: "house"
 };
 
 
 
 var car = "undamaged";
+var time = 0;
 
 var numCultists = 3;
 
@@ -259,16 +262,27 @@ var addEventListeners = function () {
 	}
 	else if (playerCharacter.choice === 4) {
 		choiceArray[5].click(function () {
-			updateNarrative("You run through the trees with reckless abandon, the branches whipping your arms and face as you plow ahead. You can't stop, you can hear them moving behind you, cursing and panting as their thick robes catch on roots and branches. You as you move deeper into the woods you hear a deep rumbling. In a second the forest seems to turn against you - the roots take on a life of their own shifting and darting to harass you and make you fall. You trip and the forest roots coil around your ankles, arms, and neck. You fight as hard as you can but there is no denying the implacable strenght of the possessed roots. The air is choked from your body and you die. Sad!")
-			playerCharacter.alive = false;
-			choiceItems.fadeOut();
-			gameOver();
-			//add a reset button to appear
+			clearChoiceBox();
+			updateNarrative("You plunge into the woods, the branches whipping your arms as the intruders rush after you. Roots and stones block your path as you move deeper into the dark forest. Your adrenaline is pounding as they move in on you, it takes you a second to realize that you're no longer being chased. You stand still for a second, feeling the weight of the silence, and are greeted by a massive roar deeper into the woods. It's an inhuman sounds, otherwordly in its deep timber. Your fear is instinctive as you turn to run, but you aren't nearly fast enough. You've barely taken a few steps before a massive tentacled creature is upon you.")
+			choiceText1.text("Fight the monster");
+			var fightMonster = $("<button id='fightMonster' class='choiceButton'>Choose</button>");
+			choiceText1.append(fightMonster);
+			fightMonster.click(function () {
+				initiateBattle(1, "Abomination", 40,4,10, "imgs/MonsterThing.gif");
+			})
+
 		})
+		
 		choiceArray[6].click(function() {
-			updateNarrative("You leap the fence at the edge of your property towards town. You can hear the cultists behind you, but their heavy robes and their tendency to read latin instead of exercising leaves you with a distinct edge. After a frantic mile of running, you've lost them. You make it into town, scared but alive. What were they doing at your house? What kind of dark horror are they going to visit on the world? What the hell happened to your door? You'll never know and spend the rest of yuor life trying to forget that this happened.");
-			choiceItems.fadeOut();
-			gameOver();
+			clearChoiceBox();
+			updateNarrative("You sprint towards your car, throwing the door open and jamming the key into the ignition as the cultists close on your vehicle. The engine roars to life as one of the robed figures collides with your side door, frantically throwing his elbow against the window and cracking the glass. But it isn't enough, you peel out of the driveway and the figures quickly recede into the background as you race down the road towards town.");
+			choiceText1.text("Head into town")
+			var headIntoTown = $("<button id='headIntoTown' class='choiceButton'>Choose</button>");
+			choiceText1.append(headIntoTown);
+			headIntoTown.click(function () {
+				playerCharacter.choice = 0;
+				chapter2UpdateChoices();
+			})
 			//add a reset button to appear
 		})
 	}
@@ -335,22 +349,31 @@ var addEventListeners = function () {
 	}
 	else if (playerCharacter.choice === 6) {
 		choiceArray[8].click(function () {
-			updateNarrative("You run through the trees with reckless abandon, the branches whipping your arms and face as you plow ahead. You can't stop, you can hear them moving behind you, cursing and panting as their thick robes catch on roots and branches. As you move deeper into the woods you hear a deep rumbling. In a second the forest seems to turn against you - the roots take on a life of their own shifting and darting to harass you and make you fall. You trip and the forest roots coil around your ankles, arms, and neck. You fight as hard as you can but there is no denying the implacable strenght of the possessed roots. The air is choked from your body and you die. Sad!")
-			playerCharacter.alive = false;
-			gameOver();
-			choiceItems.fadeOut();
-
+			clearChoiceBox();
+			updateNarrative("You plunge into the woods, the branches whipping your arms as the intruders rush after you. Roots and stones block your path as you move deeper into the dark forest. Your adrenaline is pounding as they move in on you, it takes you a second to realize that you're no longer being chased. You stand still for a second, feeling the weight of the silence, and are greeted by a massive roar deeper into the woods. It's an inhuman sounds, otherwordly in its deep timber. Your fear is instinctive as you turn to run, but you aren't nearly fast enough. You've barely taken a few steps before a massive tentacled creature is upon you.")
+			choiceText1.text("Fight the monster");
+			var fightMonster = $("<button id='fightMonster' class='choiceButton'>Choose</button>");
+			choiceText1.append(fightMonster);
+			fightMonster.click(function () {
+				initiateBattle(1, "Abomination", 40,4,10, "imgs/MonsterThing.gif");
+			})
 
 		})
 		choiceArray[9].click(function() {
-			updateNarrative("You leap the fence at the edge of your property towards town. You can hear the cultists behind you, but their heavy robes and their tendency to read latin instead of exercising leaves you with a distinct edge. After a frantic mile of running, you've lost them. You make it into town, scared but alive. What were they doing at your house? What kind of dark horror are they going to visit on the world? What the hell happened to your door? You'll never know and spend the rest of yuor life trying to forget that this happened.");
-			gameOver();
-			choiceItems.fadeOut();
-
+			updateNarrative("You sprint towards your car, throwing the door open and jamming the key into the ignition as the cultists close on your vehicle. The engine roars to life as one of the robed figures collides with your side door, frantically throwing his elbow against the window and cracking the glass. But it isn't enough, you peel out of the driveway and the figures quickly recede into the background as you race down the road towards town.");
+			clearChoiceBox();
+			choiceText1.text("Continue")
+			var headIntoTown = $("<button id='headIntoTown' class='choiceButton'>Choose</button>");
+			choiceText1.append(headIntoTown);
+			headIntoTown.click(function () {
+				playerCharacter.choice = 0;
+				chapter2UpdateChoices();
+			})
 		})
 	}
 	else if (playerCharacter.choice === 9) {
 		updateNarrative("You throw the last intruder over the countertop of your kitchen, scattering pots everywhere. He raises his hand to ward off your final blow but it connects and sends him slumping to the ground. Adrenaline is pumping through veins. Curious to know more about what bought these strangers into your house, you lean down and search his robes. Inside you find two unusual items - an ancient leather bound book as well as a heavy iron key. The book carries an aura of heavy malice. You need to get out of here and report what happened in town - but the book may help you gain more information. Do you open it?");
+		playerCharacter.book = "discovered";
 		choiceText1.text("Open the book");
 		choiceText2.text("You've had enough weirdness. The book can wait, head into town.")
 		var openBookButton = $("<button id='openBook' class='choiceButton'>Choose</button>")
@@ -405,7 +428,7 @@ var newChapter2Button = function (id, choiceText) {
 
 chapter2UpdateChoices = function() {
 	if (playerCharacter.choice === 0) {
-		updateNarrative("You run out to you car and hop behind the wheel, itching to put this nightmare behind you. You peel out onto the country road and begin to accelerate. You're finally starting to calm down when, in a flash, something white darts into the road. What do you do?");
+		updateNarrative("You peel out onto the country road and begin to accelerate. You're finally starting to calm down when, in a flash, something white darts into the road. What do you do?");
 		choiceText1.text("Accelerate.")
 		var accelerateButton = $("<button id='accelerate' class='choiceButton'>Choose</button>")
 		choiceText1.append(accelerateButton);
@@ -463,13 +486,15 @@ chapter2UpdateChoices = function() {
 		clearChoiceBox();
 		updateNarrative("It hasn't been easy but you crest a hill and are greeted by the comforting lights of civilization. You expect the feeling of spine tingling dread to abate, but feel no sense of relief. Whatever is happening to you is real - you and everyone in town might be threatened. Where do you want to go?")
 		choiceText1.text("Head to the police station, the authorities need to know.")
-		choiceText2.text("Someone has to know what this book means, head over to the 'Linguistics' department of the local university")
+		if (playerCharacter.book === "discovered") {
+			choiceText2.text("Someone has to know what this book means, head over to the 'Linguistics' department of the local university")
+			var university = ("<button id='university' class='choiceButton'>Choose</button>")
+			choiceText2.append(university);
+		};
 		choiceText3.text("You're banged up, you need some medical attention before considering anything else.")
 		var policeStation = ("<button id='policeStation' class='choiceButton'>Choose</button>")
-		var university = ("<button id='university' class='choiceButton'>Choose</button>")
 		var hospital = ("<button id='hospital' class='choiceButton'>Choose</button>")
 		choiceText1.append(policeStation);
-		choiceText2.append(university);
 		choiceText3.append(hospital);
 		//event listeners for the choices go here
 		$("#policeStation").click(function() {
@@ -478,7 +503,7 @@ chapter2UpdateChoices = function() {
 		})
 		$("#university").click(function() {
 			playerCharacter.choice = 0;
-			updateUniversityChoices();
+			universityUpdateChoices();
 		})
 		$("#hospital").click(function() {
 			playerCharacter.choice = 0;
@@ -499,6 +524,7 @@ chapter2UpdateChoices = function() {
 
 var policeStationUpdateChoices = function() {
 	if (playerCharacter.choice === 0) {
+		playerCharacter.location = "police station"
 		clearChoiceBox();
 		updateNarrative("You slowly walk across the lobby, nerves clenched for a sudden surprise. Finally you get close enough to look over the front desk and with a mix of apprehension and excitement crane your head over. You see... nothing. Behind the desk is totally normal and empty, like the person using it had just cleared out for lunch. The only irregular facet is that, upon closer inspection, there is a service revolver on the ground, kicked partially under the desk. You pick it up and discover that it only has five bullets - somebody fired this gun. (Revolver has been added to your inventory). What do you do next?")
 		var revolver = {
@@ -565,21 +591,25 @@ var policeStationUpdateChoices = function() {
 	} else if (playerCharacter.choice === 3) {
 		clearChoiceBox();
 		updateNarrative("You leave the police station. Where do you go now?");
-		choiceText1.text("Head to the university");
+		time++;
+		if (playerCharacter.book === "discovered"){
+			choiceText1.text("Head to the university");
+			var university = $("<button id='university' class='choiceButton'>Choose</button>")
+			choiceText1.append(university);
+			university.click(function () {
+			playerCharacter.choice = 0;
+			universityUpdateChoices();
+		})
+		};
 		choiceText2.text("Head to the hospital");
-		var university = $("<button id='university' class='choiceButton'>Choose</button>")
 		var hospital = $("<button id='hospital' class='choiceButton'>Choose</button>")
-		choiceText1.append(university);
 		choiceText2.append(hospital);
 		//Event listener for hospital
 		hospital.click(function () {
 			playerCharacter.choice = 0;
 			hospitalUpdateChoices();
 		}) 
-		university.click(function () {
-			playerCharacter.choice = 0;
-			universityUpdateChoices();
-		})
+
 		if (playerCharacter.museum === "discovered") {
 			choiceText3.text("Museum");
 			var museum = $("<button id='museum' class='choiceButton'>Choose</button>")
@@ -661,6 +691,7 @@ var policeStationUpdateChoices = function() {
 var hospitalUpdateChoices = function () {
 	if (playerCharacter.choice === 0) {
 		clearChoiceBox();
+		playerCharacter.location = "hospital";
 		updateNarrative("You arrive at the hospital. As you pull up you see a decided lack of activity - from the outside the hospital looks completely abandoned. There is an ambulance outside, do you want to search it or head inside?");
 		choiceText1.text("Search the ambulance");
 		choiceText2.text("Head straight into the hospital");
@@ -721,22 +752,26 @@ var hospitalUpdateChoices = function () {
 		}); 
 	} else if (playerCharacter.choice === 3) {
 		clearChoiceBox();
+		time++;
 		updateNarrative("You decide to leave the hospital, what are you going to do now?")
 			choiceText1.text("Police Station");
+			if (playerCharacter.book === "discovered") {
 			choiceText2.text("University");
-			var policeStation = $("<button id='policeStation' class='choiceButton'>Choose</button>")
 			var university = $("<button id='university' class='choiceButton'>Choose</button>")
+			choiceText2.append(university);
+			university.click(function () {
+				playerCharacter.choice = 0;
+				universityUpdateChoices();
+			})
+		};
+			var policeStation = $("<button id='policeStation' class='choiceButton'>Choose</button>")
 		choiceText1.append(policeStation);
-		choiceText2.append(university);
 		//Event listener for hospital
 		policeStation.click(function () {
 			playerCharacter.choice = 6;
 			policeStationUpdateChoices();
 		}) 
-		university.click(function () {
-			playerCharacter.choice = 0;
-			universityUpdateChoices();
-		})
+
 		if (playerCharacter.museum === "discovered") {
 			choiceText3.text("Museum");
 				var museum = $("<button id='museum' class='choiceButton'>Choose</button>")
@@ -761,19 +796,19 @@ var hospitalUpdateChoices = function () {
 	} else if (playerCharacter.choice === 5) {
 		clearChoiceBox();
 		updateNarrative("You finish off the ghouls. As the sounds of the fight fade the Doctor pokes her head out from behind the desk. 'Thank god you showed up. I was worried that I was the last one. I've been searching the hospital for other survivors, but it looks like the cult picked it clean and took everyone. I wish we had more time to talk - but all I know is that a bunch of psycho's in something called 'The Cult of the Worm' are planning some kind of big sacrifice at the museum. We need to stop it! I'll meet you there. But first take this, it might be useful.' (You recieved two shots of adrenaline, you can consume them to gain extra actions during combat!)")
-			var adrenaline = {
-				name: "Adrenaline",
-				charges: 2,
-				use: function () {
-					playerCharacter.actions += 3;
-					}
-				}
-		playerCharacter.inventory.push(adrenaline);
 		playerCharacter.doctor = 1;
 		choiceText1.text("Head out");
 		var leave = $("<button id='leave' class='choiceButton'>Choose</button>");
 		choiceText1.append(leave);
 		leave.click(function() {
+			var adrenaline = {
+				name: "Adrenaline",
+				charges: 2,
+				use: function () {
+				playerCharacter.actions += 3;
+					}
+				}
+		playerCharacter.inventory.push(adrenaline);
 			playerCharacter.choice = 3;
 			hospitalUpdateChoices();
 		})
@@ -783,6 +818,8 @@ var hospitalUpdateChoices = function () {
 var universityUpdateChoices = function () {
 	if (playerCharacter.choice === 0) {
 		clearChoiceBox();
+		time++;
+		playerCharacter.location = "university";
 		updateNarrative("You pull up outside of the linguistics department at the local university, it's about as quiet as you'd expect. You can see a light on in one of the second story offices.");
 		choiceText1.text("Head inside to see who you can find.");
 		choiceText2.text("You have a bad feeling about this, leave.");
@@ -926,6 +963,7 @@ var universityUpdateChoices = function () {
 var museumUpdateChoices = function () {
 	if (playerCharacter.choice === 0) {
 		clearChoiceBox();
+		playerCharacter.location = "musuem"
 		updateNarrative("You pull up to the site of the ritual - the museum. Even from a distance you can hear the strange chanting from your dreams. You're not exactly sure what they're planning, but you're positive about one thing - they have to be stopped. You prepare yourself to head inside");
 		choiceText1.text("Head inside");
 		var headIntoTheMuseum = $("<button id='headIntoTheMuseum' class='choiceButton'>Choose</button>");
@@ -953,7 +991,6 @@ var museumUpdateChoices = function () {
 		choiceText1.append(fightGhouls);
 		fightGhouls.click(function() {
 			playerCharacter.choice = 2;
-			initiateBattle(3, "Ghoul", 15,3,10, "imgs/ghoul.gif");
 			museumUpdateChoices();
 		})
 	} else if(playerCharacter.choice === 2 && playerCharacter.doctor === 1) {

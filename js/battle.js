@@ -43,6 +43,12 @@ var uDead = setInterval(function() {
 		gameOver();
 		choiceText3.fadeOut();
 		clearInterval(uDead);
+	} else if (time > 3) {
+		updateNarrative("You took too long. The cultist's horrible ritual came to fruition and everyone was eaten by a big pile of tentacles. Very sad.")
+		playerCharacter.actions = 0;
+		gameOver();
+		choiceText3.fadeOut();
+		clearInterval(uDead);
 	}
 
 }, 100)
