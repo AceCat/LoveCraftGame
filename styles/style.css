@@ -1,3 +1,10 @@
+@font-face {
+    font-family: journal;
+    src: '../imgs/JOURNAL.TTF';
+}
+
+
+
 .container {
 	background-color: black;
 	height: 700px;
@@ -5,20 +12,25 @@
 }
 
 #narrativeBox {
-	background-color: black;
-	height: 50%;
-	width: 100%;
-	border: 1px solid white;
-	position: relative;
-	display: block;
+	background-image: url("http://orig09.deviantart.net/59ae/f/2007/241/b/4/old_paper_texture_by_caminopalmero.jpg");
+	height: 98%;
+	width: 48%;
+	margin-left: 1.5%;
+	margin-top: .5%;
+	// border: 1px solid white;
+	position: absolute;
+	display: inline-block;
 }
 
 #choiceBox {
-	background-color: black;
-	height: 350px;
-	width: 100%;
-	position: relative;
-	border: 1px solid white;
+	background-image: url("http://orig09.deviantart.net/59ae/f/2007/241/b/4/old_paper_texture_by_caminopalmero.jpg");
+	height: 98%;
+	width: 48%;
+	margin-left: 51%;
+	margin-top: .5%;
+	position: absolute;
+	// border: 1px solid white;
+	display: inline-block;
 }
 
 #next {
@@ -29,7 +41,10 @@
 }
 
 p {
-	color: white;
+	color: black;
+	padding: 2px 2px 0 2px;
+	font-family: journal;
+	font-size: 20px;
 }
 
 #battleDiv {

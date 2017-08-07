@@ -42,9 +42,6 @@ var playerCharacter = {
 	location: "house"
 };
 
-
-
-var car = "undamaged";
 var time = 0;
 
 var numCultists = 3;
@@ -72,6 +69,56 @@ var choiceArray = [
 
 var nextButton = $("#next");
 
+var youWin = function() {
+	choiceText1.text("Ready to try again?")
+	choiceText2.empty();
+    choiceText1.append("<button id='reset'>Reset</button>")
+    var resetButton = $("#reset");
+
+
+   	resetButton[0].addEventListener("click", function () {
+	currentEnemyArray = [];
+	playerCharacter.actions = 2;
+	playerCharacter.choice = 0;
+	enemyCounter = 0;
+	numEnemies = 0;
+	numCultists = 3;
+	$("#theFeed").empty();
+	narrativeText.text("You wake up from a strange dream, feverish and sweating. The details immediately slip away from you and the only thing you can remember is a dull chant in a language you've never heard. Your head is still pounding to its rhythm. You look up from bed and realize that, against all logic, the door has disappeared from your bedroom. What do you do?");
+	choiceText1.text("Go back to sleep");
+	choiceText2.text("Search the room");
+	choiceText3.text("Jump out the window");
+	choiceText1.append(choiceButton1[0]);
+	choiceText2.append(choiceButton2[0]);
+	choiceText3.append(choiceButton3[0]);
+	$("#playerPosition").empty();
+	$("#position1").empty();
+	$("#position2").empty();
+	$("#position3").empty();
+	choiceItems.fadeIn();
+	resetButton.remove();
+	addEventListeners();
+	playerCharacter.health = 10;
+	playerCharacter.sanity = 15;
+	playerCharacter.strength = 5;
+	playerCharacter.alive = true;
+	$("#playerHealthBar").attr("value", playerCharacter.health);
+	initialChoice0();
+	initialChoice1();
+	initialChoice2();
+	var uDead = setInterval(function() {
+		if (playerCharacter.health <= 0) {
+		updateNarrative("You have died. Sorry!")
+		newBattleMessage("You have been killed.")
+		playerCharacter.actions = 0;
+		gameOver();
+		clearInterval(uDead);
+
+	}
+
+}, 100)
+	})
+}
 
 var gameOver = function () {
 	battleDiv.hide();
@@ -1044,48 +1091,7 @@ var museumUpdateChoices = function () {
 		choiceText1.append("<button id='reset'>Reset</button>")
     	var resetButton = $("#reset");
     	$(".choiceButton").remove();
-    	    resetButton[0].addEventListener("click", function () {
-    	currentEnemyArray = [];
-    	playerCharacter.actions = 2;
-    	playerCharacter.choice = 0;
-    	enemyCounter = 0;
-    	numEnemies = 0;
-    	numCultists = 3;
-    	$("#theFeed").empty();
-    	narrativeText.text("You wake up from a strange dream, feverish and sweating. The details immediately slip away from you and the only thing you can remember is a dull chant in a language you've never heard. Your head is still pounding to its rhythm. You look up from bed and realize that, against all logic, the door has disappeared from your bedroom. What do you do?");
-    	choiceText1.text("Go back to sleep");
-    	choiceText2.text("Search the room");
-    	choiceText3.text("Jump out the window");
-    	choiceText1.append(choiceButton1[0]);
-    	choiceText2.append(choiceButton2[0]);
-    	choiceText3.append(choiceButton3[0]);
-    	$("#playerPosition").empty();
-    	$("#position1").empty();
-    	$("#position2").empty();
-    	$("#position3").empty();
-    	choiceItems.fadeIn();
-    	resetButton.remove();
-    	addEventListeners();
-    	playerCharacter.health = 10;
-    	playerCharacter.sanity = 15;
-    	playerCharacter.strength = 5;
-    	playerCharacter.alive = true;
-    	$("#playerHealthBar").attr("value", playerCharacter.health);
-    	initialChoice0();
-    	initialChoice1();
-    	initialChoice2();
-    	var uDead = setInterval(function() {
-			if (playerCharacter.health <= 0) {
-			updateNarrative("You have died. Sorry!")
-			newBattleMessage("You have been killed.")
-			playerCharacter.actions = 0;
-			gameOver();
-			clearInterval(uDead);
 
-	}
-
-}, 100)
-	})
 	}
 } 
 

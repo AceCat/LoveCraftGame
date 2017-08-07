@@ -161,8 +161,12 @@ var initiateBattle = function (numEnemies, enemyName, enemyHealth, enemyStrength
 	}
 };
 
+var clearBattlePositions = function() {
+	$(".position").empty();
+}
+
 var endBattle = function () {
-	$("#playerPosition").empty();
+	clearBattlePositions();
 	$("#theFeed").empty();
 	battleDiv.fadeOut();
 	actionDiv.fadeOut();
